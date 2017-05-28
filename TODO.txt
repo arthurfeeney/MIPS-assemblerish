@@ -7,19 +7,17 @@ ShortTerm:
 XXX     1. Fix beq and bne.
             - currently point to absolute address of the jump, not offset from
             the current index.
-XXX[kind of fixed.] 2. Fix la
+XXX     2. Fix la
             - got it backwards or something?
 
 
-
-
-        3. have it write to a file instead of just printing it out.
+XXX     3. have it write to a file instead of just printing it out.
         4. add support for all main mips commands.
         5. do a more comprehensive test.
-
+        6. make it a bit better at handling bad inputs.
 
 
 Long Term:
     1. better support for more pseudo commands.
-    2. handle bad inputs better.
+    2. make it a lot better at handling bad inputs.
     3. turn into an interpreter. <- summer project?

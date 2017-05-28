@@ -58,6 +58,7 @@ public:
             std::string tmp = std::bitset<32>(std::stoi(immediate)).to_string();
             binary.append(tmp.begin(), tmp.begin()+16);
         }
+        // get the lower 16 bits of the immediate.
         else if(instr == "ori") {
             std::string tmp = std::bitset<32>(std::stoi(immediate)).to_string();
             binary.append(tmp.begin()+16, tmp.end());

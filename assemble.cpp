@@ -20,6 +20,7 @@ using std::find;
 using std::vector;
 using std::string;
 using std::ifstream;
+using std::ofstream;
 using std::map;
 using std::swap;
 using std::to_string;
@@ -28,9 +29,9 @@ using std::unique_ptr;
 static int program_counter = 0;
 
 //"assembles" the input file.
-bool assemble(ifstream& in_file)
+bool assemble(ifstream& in_file, ofstream& out_file)
 {
-    if( !in_file.is_open() ) return false;
+    if( !in_file.is_open() || !out_file.is_open() ) return false;
     vector< vector<string> > split_lines = parse_file(in_file);
     label_indices = get_labels(); // var in table.h, function in parse.h
 
@@ -38,9 +39,10 @@ bool assemble(ifstream& in_file)
 
     for(const auto& sl : split_lines)
     {
+        char ins_type = instr_type[*sl.begin()];
         // put instructions in container.
         // break pseudo (probably just 'la') into parts and convert each.
-        if(instr_type[*sl.begin()] == 'p')
+        if(ins_type== 'p')
         {
             vector<vector<string>> commands = break_la(sl);
             for(const auto& com : commands)
@@ -49,16 +51,24 @@ bool assemble(ifstream& in_file)
                 ++program_counter;
             }
         }
-        else
+        else if(ins_type == 'i' || ins_type == 'r' || ins_type == 'j')
         {
             instructions.push_back(convert_line(sl));
             ++program_counter;
         }
+        else
+        {
+            // command not found.
+            return false;
+        }
     }
 
-    for(auto& i : instructions)
-        std::cout << i->to_binary() << '\t' << i->get_string() << "\n\n";
-
+    for(const auto& i : instructions)
+    {
+        string binary = i->to_binary();
+        out_file << binary << '\t' << '\n';
+        std::cout << binary << '\t' << i->get_string() << "\n\n";
+    }
     return true; // means assembling completed.
 }
 
@@ -82,32 +92,6 @@ convert_line(const vector<string>& splitLine)
     }
 }
 
-// gets the lower 16 bits of something.
-static string get_lower(const string& address)
-{
-    return string(address.begin()+17, address.end());
-}
-
-// gets the upper 16 bits of something.
-static string get_upper(const string& address)
-{
-    return string(address.begin(), address.begin()+16);
-}
-
-static string make_32_bit(const string& num)
-{
-    if(num.size() == 32)
-    {
-        return num;
-    }
-
-    string output(32, ' ');
-    for(size_t i = 0; i < 32; ++i) {
-        output[i] = i < 32 - num.size() ? '0' : num[i - num.size()];
-    }
-    return output;
-}
-
 // breaks la into lui and ori.
 static vector< vector<string> > break_la(const vector<string>& splitLine)
 {
@@ -127,7 +111,8 @@ static vector< vector<string> > break_la(const vector<string>& splitLine)
         {
             rs = reg;
         }
-        vector<string> command {
+        vector<string> command
+        {
             instruction,
             rs,
             rt,

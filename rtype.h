@@ -19,12 +19,12 @@ private:
     std::string rd;
     std::string shift;
     std::string func;
-    
+
     std::string binary;
 
 public:
     RType(const std::vector<std::string> line):
-        original(line), instr(line[0]), rs(line[2]), rt(line[3]), 
+        original(line), instr(line[0]), rs(line[2]), rt(line[3]),
         rd(line[1]), shift("0")
     {
         if(instr == "sll" || instr == "srl" || instr == "sra")
@@ -42,11 +42,12 @@ public:
     }
 
     RType(const RType &r):
-        instr(r.instr), rs(r.rs), rt(r.rt), rd(r.rd), shift(r.shift), 
+        instr(r.instr), rs(r.rs), rt(r.rt), rd(r.rd), shift(r.shift),
         func(r.func), binary(r.binary) {}
 
     std::string to_binary()
     {
+        binary.clear();
         binary.append(instr_opcode[instr]);
         binary.append(convert_reg[rs]);
         binary.append(convert_reg[rt]);

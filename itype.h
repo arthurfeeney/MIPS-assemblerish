@@ -11,6 +11,7 @@
 
 class IType : public Instruction {
 private:
+    int pc;
     std::vector<std::string> original;
 
     std::string instr;
@@ -21,7 +22,8 @@ private:
     std::string binary;
 
 public:
-    IType(const std::vector<std::string> line): original(line), instr(line[0])
+    IType(const std::vector<std::string> line, const int p):
+        original(line), instr(line[0]), pc(p)
     {
         int m = 2, n = 1, o = 3;
         if(instr == "sw" || instr == "lw" || instr == "lbu" || 
@@ -31,6 +33,12 @@ public:
         immediate = line[o];
         if(!is_num(immediate))
             immediate = std::to_string(label_indices[immediate] * 4);
+
+        if(instr == "beq" || instr == "bne") 
+        {
+            immediate = std::to_string(std::stoi(immediate) - (pc * 4)); 
+        }
+
 
         rs = instr == "lui" ? "$zero" : line[m];
         rt = line[n];

@@ -25,6 +25,8 @@ using std::swap;
 using std::to_string;
 using std::unique_ptr;
 
+static int program_counter = 0;
+
 //"assembles" the input file.
 bool assemble(ifstream& file) 
 {
@@ -41,10 +43,17 @@ bool assemble(ifstream& file)
         if(instr_type[*sl.begin()] == 'p') 
         {
             vector<vector<string>> commands = break_p(sl);
-            for(const auto& com : commands)
+            for(const auto& com : commands) 
+            {
                 instructions.push_back(convert_line(com));
+                ++program_counter;
+            }
         }
-        else instructions.push_back(convert_line(sl));
+        else 
+        {
+            instructions.push_back(convert_line(sl));
+            ++program_counter;
+        }
     }
     
     for(auto& i : instructions)
@@ -61,7 +70,7 @@ convert_line(const vector<string>& splitLine)
     const string instr = *splitLine.begin(); //first element in line.
     if(instr_type[instr] == 'i') 
     {
-        return unique_ptr<Instruction>(new IType(splitLine));
+        return unique_ptr<Instruction>(new IType(splitLine, program_counter));
     }
     else if(instr_type[instr] == 'r') 
     {

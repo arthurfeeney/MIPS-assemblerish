@@ -1,15 +1,19 @@
 
 
 Little to do list :)
+XXX means that it is done.
 
 ShortTerm:
-1. Fix beq and bne.
+XXX 1. Fix beq and bne.
     - currently point to absolute address of the jump, not offset from
       the current index.
 2. Fix la
-    - got it backwards or something? whatever.
-3. add support for all main mips commands.
+    - got it backwards or something?
+3. have it write to a file instead of just printing it out. 
+4. add support for all main mips commands.
+5. do a more comprehensive test.
 
 Long Term:
-    - better support for more pseudo commands.
-    - turn into an interpreter. <- summer project?
+    1. better support for more pseudo commands.
+    2. handle bad inputs better.
+    3. turn into an interpreter. <- summer project?

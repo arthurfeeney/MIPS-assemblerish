@@ -1,0 +1,15 @@
+
+
+Little to do list :)
+
+ShortTerm:
+1. Fix beq and bne.
+    - currently point to absolute address of the jump, not offset from
+      the current index.
+2. Fix la
+    - got it backwards or something? whatever.
+3. add support for all main mips commands.
+
+Long Term:
+    - better support for more pseudo commands.
+    - turn into an interpreter. <- summer project?

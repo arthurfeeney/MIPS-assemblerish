@@ -34,11 +34,6 @@ public:
         if(!is_num(immediate))
             immediate = std::to_string(label_indices[immediate] * 4);
 
-        if(instr == "lui")
-        {
-            immediate = '0';
-        }
-
         if(instr == "beq" || instr == "bne")
         {
             immediate = std::to_string(std::stoi(immediate) - (pc * 4));
@@ -58,7 +53,20 @@ public:
         binary.append(convert_instr[instr]);
         binary.append(convert_reg[rs]);
         binary.append(convert_reg[rt]);
-        binary.append(std::bitset<16>(std::stoi(immediate)).to_string());
+        // get the upper 16 bits of the immediate.
+        if(instr == "lui") {
+            std::string tmp = std::bitset<32>(std::stoi(immediate)).to_string();
+            binary.append(tmp.begin(), tmp.begin()+16);
+        }
+        else if(instr == "ori") {
+            std::string tmp = std::bitset<32>(std::stoi(immediate)).to_string();
+            binary.append(tmp.begin()+16, tmp.end());
+        }
+        else {
+            binary.append(
+                std::bitset<16>(std::stoi(immediate)).to_string()
+            );
+        }
         return binary;
     }
 

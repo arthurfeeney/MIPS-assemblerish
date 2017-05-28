@@ -4,14 +4,20 @@ Little to do list :)
 XXX means that it is done.
 
 ShortTerm:
-XXX 1. Fix beq and bne.
-    - currently point to absolute address of the jump, not offset from
-      the current index.
-2. Fix la
-    - got it backwards or something?
-3. have it write to a file instead of just printing it out. 
-4. add support for all main mips commands.
-5. do a more comprehensive test.
+XXX     1. Fix beq and bne.
+            - currently point to absolute address of the jump, not offset from
+            the current index.
+XXX[kind of fixed.] 2. Fix la
+            - got it backwards or something?
+
+
+
+
+        3. have it write to a file instead of just printing it out.
+        4. add support for all main mips commands.
+        5. do a more comprehensive test.
+
+
 
 Long Term:
     1. better support for more pseudo commands.

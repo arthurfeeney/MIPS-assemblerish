@@ -26,7 +26,7 @@ public:
         original(line), instr(line[0]), pc(p)
     {
         int m = 2, n = 1, o = 3;
-        if(instr == "sw" || instr == "lw" || instr == "lbu" || 
+        if(instr == "sw" || instr == "lw" || instr == "lbu" ||
         instr == "lhu" || instr == "lui") std::swap(m, o);
         else if(instr == "beq" || instr == "bne") std::swap(m, n);
 
@@ -34,9 +34,14 @@ public:
         if(!is_num(immediate))
             immediate = std::to_string(label_indices[immediate] * 4);
 
-        if(instr == "beq" || instr == "bne") 
+        if(instr == "lui")
         {
-            immediate = std::to_string(std::stoi(immediate) - (pc * 4)); 
+            immediate = '0';
+        }
+
+        if(instr == "beq" || instr == "bne")
+        {
+            immediate = std::to_string(std::stoi(immediate) - (pc * 4));
         }
 
 

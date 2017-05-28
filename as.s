@@ -27,6 +27,6 @@ word:
 		sra 	$t1, $t2, 2
 		subu	$t1, $t2, $t3
 swag:	or 		$t1, $t2, $t3
-		la 		$t1, swag #pseudo command :o
+		la 		$t1, word #pseudo command :o
 		xor		$t1, $t2, $t3
 		nor 		$t1, $t2, $t3

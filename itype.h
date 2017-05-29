@@ -27,18 +27,25 @@ public:
     {
         int m = 2, n = 1, o = 3;
         if(instr == "sw" || instr == "lw" || instr == "lbu" ||
-        instr == "lhu" || instr == "lui") std::swap(m, o);
-        else if(instr == "beq" || instr == "bne") std::swap(m, n);
-
+        instr == "lhu" || instr == "lui")
+        {
+            std::swap(m, o);
+        }
+        else if(instr == "beq" || instr == "bne")
+        {
+            std::swap(m, n);
+        }
+        
         immediate = line[o];
         if(!is_num(immediate))
+        {
             immediate = std::to_string(label_indices[immediate] * 4);
+        }
 
         if(instr == "beq" || instr == "bne")
         {
             immediate = std::to_string(std::stoi(immediate) - (pc * 4));
         }
-
 
         rs = instr == "lui" ? "$zero" : line[m];
         rt = line[n];

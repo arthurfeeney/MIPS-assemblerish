@@ -39,6 +39,8 @@ map<string, char> instr_type {
     make_pair("lhu", 'i'),
     make_pair("lui", 'i'),
     make_pair("ori", 'i'),
+    make_pair("xori", 'i'),
+    make_pair("slti", 'i'),
     make_pair("add", 'r'),
     make_pair("sub", 'r'),
     make_pair("addu", 'r'),
@@ -52,6 +54,13 @@ map<string, char> instr_type {
     make_pair("or", 'r'),
     make_pair("xor", 'r'),
     make_pair("nor", 'r'),
+    make_pair("div", 'r'),
+    make_pair("divu", 'r'),
+    make_pair("multu", 'r'),
+    make_pair("sllv", 'r'),
+    make_pair("srav", 'r'),
+    make_pair("slt", 'r'),
+    make_pair("sltu", 'r'),
     make_pair("j", 'j'),
     make_pair("jal", 'j'),
     make_pair("la", 'p') // a Pseudo-instruction.
@@ -78,7 +87,7 @@ map<string, string> convert_instr {
     make_pair("andi", "001100"),
     make_pair("lbu", "100100"),
     make_pair("lhu", "100101"),
-    make_pair("mult", "001100"),
+    make_pair("mult", "011000"),
     make_pair("lui", "001111"),
     make_pair("ori", "001101"),
     make_pair("jr", "001000"),
@@ -88,7 +97,16 @@ map<string, string> convert_instr {
     make_pair("subu", "100011"),
     make_pair("or", "100101"),
     make_pair("xor", "100110"),
-    make_pair("nor", "100111")
+    make_pair("nor", "100111"),
+    make_pair("div", "011010"),
+    make_pair("divu", "011011"),
+    make_pair("multu", "011001"),
+    make_pair("sllv", "000100"),
+    make_pair("srav", "000111"),
+    make_pair("xori", "001110"),
+    make_pair("slt", "101010"),
+    make_pair("sltu", "101011"),
+    make_pair("slti", "001010")
 };
 
 map<string, string> instr_opcode {
@@ -104,7 +122,14 @@ map<string, string> instr_opcode {
     make_pair("subu", "000000"),
     make_pair("or", "000000"),
     make_pair("xor", "000000"),
-    make_pair("nor", "000000")
+    make_pair("nor", "000000"),
+    make_pair("div", "000000"),
+    make_pair("divu", "000000"),
+    make_pair("multu", "000000"),
+    make_pair("sllv", "000000"),
+    make_pair("srav", "000000"),
+    make_pair("slt", "000000"),
+    make_pair("sltu", "000000")
 };
 
 
@@ -127,17 +152,17 @@ map<string, string> convert_reg {
 
     //convert temporary registers
     make_pair("$t0", "01000"),
-    make_pair("$t1", "01001"), 
+    make_pair("$t1", "01001"),
     make_pair("$t2", "01010"),
     make_pair("$t3", "01011"),
     make_pair("$t4", "01100"),
     make_pair("$t5", "01101"),
     make_pair("$t6", "01110"),
     make_pair("$t7", "01111"),
-    
+
     //convert saved registers
     make_pair("$s0", "10000"),
-    make_pair("$s1", "10001"), 
+    make_pair("$s1", "10001"),
     make_pair("$s2", "10010"),
     make_pair("$s3", "10011"),
     make_pair("$s4", "10100"),
@@ -152,7 +177,7 @@ map<string, string> convert_reg {
     //registers used by os kernel :o wo
     make_pair("$k0", "11010"),
     make_pair("$k1", "11011"),
-    
+
     make_pair("$gp", "11100"), //global pointer
     make_pair("$sp", "11101"), //stack pointer
     make_pair("$fp", "11110"), //frame-pointer

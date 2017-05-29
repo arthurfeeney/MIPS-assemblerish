@@ -77,7 +77,7 @@ bool assemble(ifstream& in_file, ofstream& out_file)
 static unique_ptr<Instruction>
 convert_line(const vector<string>& splitLine)
 {
-    const string instr = *splitLine.begin(); //first element in line.
+    const string instr = *splitLine.begin();
     if(instr_type[instr] == 'i')
     {
         return unique_ptr<Instruction>(new IType(splitLine, program_counter));

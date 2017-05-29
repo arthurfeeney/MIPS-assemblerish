@@ -9,15 +9,34 @@ XXX     1. Fix beq and bne.
             the current index.
 XXX     2. Fix la
             - got it backwards or something?
-
-
 XXX     3. have it write to a file instead of just printing it out.
         4. add support for all main mips commands.
+            -slti
+            -sltiu
+            -bgtz
+            -blez
+            -jalr
+            -lb
+            -lh
+            -sb
+            -sh
+            -mfhi
+            -mflo
+            -mthi
+            -mtlo
+            -trap (?)
+
         5. do a more comprehensive test.
         6. make it a bit better at handling bad inputs.
+            - add some simple error outputs. 
+            - assemble returns an int for error codes. 
 
 
 Long Term:
     1. better support for more pseudo commands.
     2. make it a lot better at handling bad inputs.
-    3. turn into an interpreter. <- summer project?
+    3. make it handle things like data segments and io stuff.  
+    4. turn into an interpreter (or use it in interpreter?) <- summer project?
+        - more options for how it runs. 'run' and 's' commands.
+            - run runs through the program.
+            - s steps through the program showing the binary of each command.

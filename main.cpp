@@ -16,25 +16,31 @@
 using std::string;
 using std::ifstream;
 using std::ofstream;
+using std::cout;
+using std::cin;
 
-int main(void) {
+int main(void) 
+{
 
     /*
      * Some of my design decisions with this are REALLY bad...
      * And it's kind of incomplete.
      */
-
     // examples files are as.s and starter.s
-    string fileName = "as.s";
+    
+    string fileName;
+    cout << "enter a file name: ";
+    cin >> fileName;
+
     ifstream strm(fileName);
     ofstream out("output.txt");
-    if(!assemble(strm, out))
+    if(assemble(strm, out))
     {
-        std::cout << "assembling failed." << '\n';
+        cout << "assembling successful!" << '\n';
     }
     else
     {
-        std::cout << "assembling successful!" << '\n';
+        cout << "assembling failed." << '\n';
     }
 
     strm.close();

@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <bitset>
+#include <algorithm>
 
 #include "instruction.h"
 #include "table.h"
@@ -32,6 +33,20 @@ public:
             rs = "$zero";
             rt = line[2];
             shift = line[3];
+        }
+        else if(instr == "sllv" || instr == "srav")
+        {
+            std::swap(rs, rt);
+        }
+        else if(instr == "mult" ||
+                instr == "multu" ||
+                instr == "div" ||
+                 instr == "divu")
+        {
+            rt = rs;
+            rs = rd;
+            rd = "$zero";
+
         }
         else if(instr == "jr")
         {

@@ -40,9 +40,9 @@ bool assemble(ifstream& in_file, ofstream& out_file)
     for(const auto& sl : split_lines)
     {
         char ins_type = instr_type[*sl.begin()];
-        // put instructions in container.
-        // break pseudo (probably just 'la') into parts and convert each.
-        if(ins_type== 'p')
+        // put string instructions into the instructions vector.
+        // break pseudo into parts and convert each.
+        if(ins_type == 'p')
         {
             vector<vector<string>> commands = break_la(sl);
             for(const auto& com : commands)

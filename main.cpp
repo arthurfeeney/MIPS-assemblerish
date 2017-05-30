@@ -2,7 +2,6 @@
 
 /*
  * Arthur Feeney
- * Pledged. This assignment is entirely my own work! :o
  */
 
 #include <iostream>
@@ -19,15 +18,10 @@ using std::ofstream;
 using std::cout;
 using std::cin;
 
-int main(void) 
+int main(void)
 {
-
-    /*
-     * Some of my design decisions with this are REALLY bad...
-     * And it's kind of incomplete.
-     */
     // examples files are as.s and starter.s
-    
+
     string fileName;
     cout << "enter a file name: ";
     cin >> fileName;

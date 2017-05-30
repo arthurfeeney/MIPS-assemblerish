@@ -11,11 +11,6 @@ XXX     2. Fix la
             - got it backwards or something?
 XXX     3. have it write to a file instead of just printing it out.
         4. add support for all main mips commands.
-            -slti
-            -sltiu
-            -bgtz
-            -blez
-            -jalr
             -lb
             -lh
             -sb
@@ -26,10 +21,16 @@ XXX     3. have it write to a file instead of just printing it out.
             -mtlo
             -trap (?)
 
-        5. do a more comprehensive test.
+        5. do a more comprehensive test. Make sure everything still works.
+            - it probably does, but just make sure.
+            - make extra sure la works and lui and ori work individually...
         6. make it a bit better at handling bad inputs.
             - add some simple error outputs. 
-            - assemble returns an int for error codes. 
+            - assemble returns an int for error codes.
+        7. support hexidecimal for immediates.
+        8. MAYBE
+            refactor so that the command parts aren't ordered in the 
+            constructor. make that happens when to_binary is called?
 
 
 Long Term:

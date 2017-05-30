@@ -54,12 +54,18 @@ public:
             rt = "$zero";
             rd = "$zero";
         }
+        else if(instr == "jalr")
+        {
+            rt = "$zero";
+        }
     }
 
+    // copy
     RType(const RType &r):
         instr(r.instr), rs(r.rs), rt(r.rt), rd(r.rd), shift(r.shift),
         func(r.func), binary(r.binary) {}
 
+    // converts the line to binary.
     std::string to_binary()
     {
         binary.clear();
@@ -72,6 +78,7 @@ public:
         return binary;
     }
 
+    // outputs the original string.
     std::string get_string()
     {
         std::string ret;

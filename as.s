@@ -40,3 +40,7 @@ swag:	or 		$t1, $t2, $t3
         slt     $t1, $t2, $t3
         sltu     $t1, $t2, $t3
         slti    $t1, $t2, 0
+        sltiu   $t1, $t2, 0
+        bgtz    $t1, 0
+        blez    $t1, 0
+        jalr    $t1, $t2

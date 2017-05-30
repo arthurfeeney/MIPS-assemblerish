@@ -31,12 +31,14 @@ public:
         {
             std::swap(m, o);
         }
-        else if(instr == "beq" || instr == "bne")
+        else if(instr == "beq" || instr == "bne" || instr == "bgtz" ||
+                instr == "blez")
         {
             std::swap(m, n);
         }
-        
+
         immediate = line[o];
+
         if(!is_num(immediate))
         {
             immediate = std::to_string(label_indices[immediate] * 4);
@@ -48,7 +50,7 @@ public:
         }
 
         rs = instr == "lui" ? "$zero" : line[m];
-        rt = line[n];
+        rt = instr == "bgtz" || instr == "blez" ? "$zero" : line[n];
     }
 
     IType(const IType& i):
@@ -63,12 +65,12 @@ public:
         // get the upper 16 bits of the immediate.
         if(instr == "lui") {
             std::string tmp = std::bitset<32>(std::stoi(immediate)).to_string();
-            binary.append(tmp.begin(), tmp.begin()+16);
+            binary.append(tmp.begin(), tmp.begin()+16); // upper 16 bits
         }
         // get the lower 16 bits of the immediate.
         else if(instr == "ori") {
             std::string tmp = std::bitset<32>(std::stoi(immediate)).to_string();
-            binary.append(tmp.begin()+16, tmp.end());
+            binary.append(tmp.begin()+16, tmp.end()); // lower 16 bits
         }
         else {
             binary.append(

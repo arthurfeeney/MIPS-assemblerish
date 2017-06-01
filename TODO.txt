@@ -10,16 +10,11 @@ XXX     1. Fix beq and bne.
 XXX     2. Fix la
             - got it backwards or something?
 XXX     3. have it write to a file instead of just printing it out.
-        4. add support for all main mips commands.
-            -lb
-            -lh
-            -sb
-            -sh
-            -mfhi
-            -mflo
-            -mthi
-            -mtlo
-            -trap (?)
+XXX     4. add support for all main mips commands.
+
+        4.5 modify the conditionals so that they are a bit more readable.
+            - maybe call private functions which compare to elements
+            different vectors?
 
         5. do a more comprehensive test. Make sure everything still works.
             - it probably does, but just make sure.
@@ -30,13 +25,14 @@ XXX     3. have it write to a file instead of just printing it out.
         7. support hexidecimal for immediates.
         8. MAYBE
             refactor so that the command parts aren't ordered in the 
-            constructor. make that happens when to_binary is called?
+            constructor. Just store the original string, and order things
+             when to_binary is called?
 
 
 Long Term:
-    1. better support for more pseudo commands.
+    1. support for more pseudo commands.
     2. make it a lot better at handling bad inputs.
-    3. make it handle things like data segments and io stuff.  
+    3. make it handle things like data segments and io stuff(for interpreter).  
     4. turn into an interpreter (or use it in interpreter?) <- summer project?
         - more options for how it runs. 'run' and 's' commands.
             - run runs through the program.

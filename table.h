@@ -44,6 +44,10 @@ map<string, char> instr_type {
     make_pair("sltiu", 'i'),
     make_pair("bgtz", 'i'),
     make_pair("blez", 'i'),
+    make_pair("lb", 'i'),
+    make_pair("lh", 'i'),
+    make_pair("sb", 'i'),
+    make_pair("sh", 'i'),
     make_pair("add", 'r'),
     make_pair("sub", 'r'),
     make_pair("addu", 'r'),
@@ -65,6 +69,10 @@ map<string, char> instr_type {
     make_pair("slt", 'r'),
     make_pair("sltu", 'r'),
     make_pair("jalr", 'r'),
+    make_pair("mfhi", 'r'),
+    make_pair("mflo", 'r'),
+    make_pair("mthi", 'r'),
+    make_pair("mtlo", 'r'),
     make_pair("j", 'j'),
     make_pair("jal", 'j'),
     make_pair("la", 'p') // a Pseudo-instruction.
@@ -114,7 +122,15 @@ map<string, string> convert_instr {
     make_pair("sltiu", "001011"),
     make_pair("bgtz", "000111"),
     make_pair("blez", "000110"),
-    make_pair("jalr", "001001")
+    make_pair("jalr", "001001"),
+    make_pair("lb", "100000"),
+    make_pair("lh", "100001"),
+    make_pair("sb", "101000"),
+    make_pair("sh", "101001"),
+    make_pair("mfhi", "010000"),
+    make_pair("mflo", "010010"),
+    make_pair("mthi", "010001"),
+    make_pair("mtlo", "010011")
 };
 
 map<string, string> instr_opcode {
@@ -138,7 +154,11 @@ map<string, string> instr_opcode {
     make_pair("srav", "000000"),
     make_pair("slt", "000000"),
     make_pair("sltu", "000000"),
-    make_pair("jalr", "000000")
+    make_pair("jalr", "000000"),
+    make_pair("mfhi", "000000"),
+    make_pair("mflo", "000000"),
+    make_pair("mthi", "000000"),
+    make_pair("mtlo", "000000")
 };
 
 

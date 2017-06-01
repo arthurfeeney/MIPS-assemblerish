@@ -44,3 +44,10 @@ swag:	or 		$t1, $t2, $t3
         bgtz    $t1, 0
         blez    $t1, 0
         jalr    $t1, $t2
+        lb      $t1, 0($t2)
+        lh      $t1, 0($t2)
+        sb      $t1, 0($t2)
+        mfhi    $t1
+        mflo    $t1
+        mthi    $t1
+        mtlo    $t1

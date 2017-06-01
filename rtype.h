@@ -10,6 +10,20 @@
 #ifndef RTYPE_H
 #define RTYPE_H
 
+namespace rtype_compare{
+    vector< vector<string> > sets
+    {
+        vector<string> {"sll", "srl", "sra"},
+        vector<string> {"sllv", "srav"},
+        vector<string> {"mult", "multu", "div", "divu"},
+        vector<string> {"jr"},
+        vector<string> {"jalr"},
+        vector<string> {"mfhi", "mflo"},
+        vector<string> {"mthi", "mtlo"}
+    };
+    const int error = 420; // some thing indicating an error.
+};
+
 class RType : public Instruction {
 private:
     std::vector<std::string> original;
@@ -23,39 +37,65 @@ private:
 
     std::string binary;
 
+    int instr_is_set()
+    {
+        const vector< vector<string> >& read_sets = rtype_compare::sets;
+        for(int i = 0; i < read_sets.size(); ++i)
+        {
+            const vector<string>& cur_set = read_sets[i];
+            if(std::find(cur_set.begin(), cur_set.end(), instr)!=cur_set.end())
+            {
+                return i; // returns which conditional should be called.
+            }
+        }
+        return rtype_compare::error;
+    }
+
 public:
     RType(const std::vector<std::string> line):
         original(line), instr(line[0]), rs(line[2]), rt(line[3]),
         rd(line[1]), shift("0")
     {
-        if(instr == "sll" || instr == "srl" || instr == "sra")
+        // determines which condition to use.
+        // change to switch statement?
+        // move to to_binary() and make constructor only assign original.
+        // have boolean indicating if the binary has been constructed?
+        const int id = instr_is_set();
+        if(id == 0)
         {
             rs = "$zero";
             rt = line[2];
             shift = line[3];
         }
-        else if(instr == "sllv" || instr == "srav")
+        else if(id == 1)
         {
             std::swap(rs, rt);
         }
-        else if(instr == "mult" ||
-                instr == "multu" ||
-                instr == "div" ||
-                 instr == "divu")
+        else if(id == 2)
         {
             rt = rs;
             rs = rd;
             rd = "$zero";
-
         }
-        else if(instr == "jr")
+        else if(id == 3)
         {
             rs = line[1];
             rt = "$zero";
             rd = "$zero";
         }
-        else if(instr == "jalr")
+        else if(id == 4)
         {
+            rt = "$zero";
+        }
+        else if(id == 5)
+        {
+            rs = "$zero";
+            rt = "$zero";
+        }
+        else if(id == 6)
+        {
+            rs = rd;
+            rd = "$zero";
             rt = "$zero";
         }
     }

@@ -27,7 +27,8 @@ public:
     {
         int m = 2, n = 1, o = 3;
         if(instr == "sw" || instr == "lw" || instr == "lbu" ||
-        instr == "lhu" || instr == "lui")
+        instr == "lhu" || instr == "lui" || instr == "lb" || instr == "lh" ||
+        instr == "sb")
         {
             std::swap(m, o);
         }
@@ -44,6 +45,7 @@ public:
             immediate = std::to_string(label_indices[immediate] * 4);
         }
 
+        // offset from current address.
         if(instr == "beq" || instr == "bne")
         {
             immediate = std::to_string(std::stoi(immediate) - (pc * 4));

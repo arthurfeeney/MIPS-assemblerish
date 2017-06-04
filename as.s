@@ -1,6 +1,8 @@
 
 #hi there
 
+# not an actual valid mips program! Just has a bunch of commands!
+
 hi: # yolo
 		addi	$t2, $zero, 1 # adds 1 to t2
 		add		$t4, $t2, $t3

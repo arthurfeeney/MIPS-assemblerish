@@ -15,6 +15,7 @@ XXX     4. add support for all main mips commands.
 
         4.5 modify the conditionals so that they are a bit more readable.
             - use a static member variable instead of a namespace.
+            - a bit harder than I thought it was going to be...
         5. do a more comprehensive test. Make sure everything still works.
             - it probably does, but just make sure.
             - make extra sure la works and lui and ori work individually...

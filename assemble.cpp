@@ -82,11 +82,11 @@ convert_line(const vector<string>& splitLine)
     {
         return unique_ptr<Instruction>(new IType(splitLine, program_counter));
     }
-    else if(instr_type[instr] == 'r')
+    if(instr_type[instr] == 'r')
     {
         return unique_ptr<Instruction>(new RType(splitLine));
     }
-    else if(instr_type[instr] == 'j')
+    if(instr_type[instr] == 'j')
     {
         return unique_ptr<Instruction>(new JType(splitLine));
     }

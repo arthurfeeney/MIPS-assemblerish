@@ -17,7 +17,6 @@
 #include "itype.h"
 #include "jtype.h"
 
-
 using std::find;
 using std::vector;
 using std::string;
@@ -28,7 +27,7 @@ using std::swap;
 using std::to_string;
 using std::unique_ptr;
 
-static int program_counter = 0;
+static int program_counter = 0; // this pc is only used when assembling.
 
 //"assembles" the input file.
 bool assemble(ifstream& in_file, ofstream& out_file)
@@ -71,6 +70,19 @@ bool assemble(ifstream& in_file, ofstream& out_file)
         out_file << binary << '\t' << '\n';
         std::cout << binary << '\t' << i->get_string() << "\n\n";
     }
+/*
+    vector<Instruction> interp(instructions.size());
+
+    for(int i = 0; i < instructions.size(); ++i)
+    {
+        Instruction* instr;
+        instr = (instructions[i].release());
+        std::cout << instr->get_string();
+        //interp[i] = instr;
+        ///std::cout << interp[i].get_string();
+    }
+*/
+    //std::cout << interp[0].get_string();
 
     interpret(instructions);
 

@@ -8,7 +8,7 @@
 #define INTERPRETER_H
 
 
-bool interpret(const std::vector<std::unique_ptr<Instruction>>& );
+bool interpret(std::vector<std::unique_ptr<Instruction>>& );
 
 
 #endif

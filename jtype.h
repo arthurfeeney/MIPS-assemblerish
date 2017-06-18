@@ -40,6 +40,19 @@ public:
     JType(const JType& j):
         instr(j.instr), jump_location(j.jump_location), binary(j.binary) {}
 
+    JType& operator=(JType other)
+    {
+        if(&other == this)
+        {
+            return *this;
+        }
+        original = other.original;
+        instr = other.instr;
+        jump_location = other.jump_location;
+        binary = other.binary;
+        return *this;
+    }
+
     std::string to_binary()
     {
         binary.append(convert_instr[instr]);
@@ -59,7 +72,7 @@ public:
         return ret;
     }
 
-    std::vector<std::string> get_original()
+    const std::vector<std::string>& get_original()
     {
         return original;
     }

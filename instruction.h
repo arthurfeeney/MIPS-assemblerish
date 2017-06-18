@@ -10,9 +10,10 @@ public:
 
     ~Instruction() = default;
 
+    virtual Instruction& operator=(Instruction other) {}
     virtual std::string to_binary() {}
     virtual std::string get_string() {}
-    virtual std::vector<std::string> get_original() {}
+    virtual const std::vector<std::string>& get_original() {}
 };
 
 #endif

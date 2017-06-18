@@ -116,6 +116,25 @@ public:
         instr(r.instr), rs(r.rs), rt(r.rt), rd(r.rd), shift(r.shift),
         func(r.func), binary(r.binary) {}
 
+    RType& operator=(RType other)
+    {
+        if(&other == this)
+        {
+            return *this;
+        }
+        original = other.original;
+
+        instr = other.instr;
+        rs = other.rs;
+        rt = other.rt;
+        rd = other.rd;
+        shift = other.shift;
+        func = other.func;
+
+        binary_constructed = other.binary_constructed;
+        binary = other.binary;
+    }
+
     // converts the line to binary.
     std::string to_binary()
     {
@@ -146,7 +165,7 @@ public:
         return ret;
     }
 
-    std::vector<std::string> get_original()
+    const std::vector<std::string>& get_original()
     {
         return original;
     }

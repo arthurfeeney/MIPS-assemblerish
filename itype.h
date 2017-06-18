@@ -2,6 +2,7 @@
 #include <vector>
 #include <bitset>
 #include <algorithm>
+#include <utility>
 
 #include "instruction.h"
 #include "table.h"
@@ -22,6 +23,7 @@ private:
     std::string binary;
 
 public:
+    IType() {}
     IType(const std::vector<std::string> line, const int p):
         original(line), instr(line[0]), pc(p)
     {
@@ -58,6 +60,22 @@ public:
     IType(const IType& i):
         instr(i.instr), rs(i.rs), rt(i.rt), immediate(i.immediate),
         binary(i.binary) {}
+
+    IType& operator=(IType other)
+    {
+        pc = other.pc;
+        original = other.original;
+        for(const auto& s : other.original)
+        {
+            original.push_back(s);
+        }
+        rs = other.rs;
+        rt = other.rt;
+        immediate = other.immediate;
+        binary = other.binary;
+        std::cout << pc << " " << other.pc;
+        return *this;
+    }
 
     std::string to_binary()
     {
@@ -101,7 +119,7 @@ public:
         return ret;
     }
 
-    std::vector<std::string> get_original()
+    const std::vector<std::string>& get_original()
     {
         return original;
     }

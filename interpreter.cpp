@@ -9,6 +9,7 @@
 #include "rtype.h"
 #include "itype.h"
 #include "jtype.h"
+#include "table.h" // stores the labels of the indices.
 
 using std::vector;
 using std::string;
@@ -17,7 +18,7 @@ using std::stoi;
 
 // registers are saved in interpret_table.h
 
-void addi(vector<string>& instr)
+void addi(const vector<string>& instr)
 {
     string rs = instr[2];
     string rt = instr[1];
@@ -25,11 +26,14 @@ void addi(vector<string>& instr)
     registers[rt] = registers[rs] + stoi(i);
 }
 
-bool interpret(const vector<unique_ptr<Instruction>>& commands)
+bool interpret(vector<unique_ptr<Instruction>>& instructions)
 {
-    for(const auto& instr : commands)
+    int program_counter = 0;
+    const int final_pc = instructions.size();
+
+    for( ; program_counter < final_pc; ++program_counter )
     {
-        vector<string> com = instr->get_original();
+        const vector<string> com = instructions[program_counter]->get_original();
         addi(com);
         std::cout << registers["$t2"];
     }

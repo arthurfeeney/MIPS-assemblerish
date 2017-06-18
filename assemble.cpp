@@ -8,6 +8,7 @@
 #include <bitset>
 #include <memory>
 
+#include "interpreter.h"
 #include "assemble.h"
 #include "parse.h"
 #include "table.h"
@@ -15,6 +16,7 @@
 #include "rtype.h"
 #include "itype.h"
 #include "jtype.h"
+
 
 using std::find;
 using std::vector;
@@ -69,6 +71,9 @@ bool assemble(ifstream& in_file, ofstream& out_file)
         out_file << binary << '\t' << '\n';
         std::cout << binary << '\t' << i->get_string() << "\n\n";
     }
+
+    interpret(instructions);
+
     return true; // means assembling completed.
 }
 

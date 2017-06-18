@@ -4,10 +4,12 @@
 #include <string>
 #include <utility>
 
+using std::make_pair;
+
 #ifndef INTERPRET_TABLE_H
 #define INTERPRET_TABLE_H
 
-map<std::string, int> registers
+std::map<std::string, int> registers
 {
     //the zero register!
     make_pair("$zero", 0),

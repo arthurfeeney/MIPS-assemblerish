@@ -25,7 +25,7 @@ private:
         {
             const int spot = label_indices[jump_location] * 4;
             jump_location = std::bitset<26>(spot).to_string();
-        } 
+        }
         else
         {
             const int spot = std::stoi(jump_location);
@@ -39,7 +39,7 @@ public:
 
     JType(const JType& j):
         instr(j.instr), jump_location(j.jump_location), binary(j.binary) {}
-    
+
     std::string to_binary()
     {
         binary.append(convert_instr[instr]);
@@ -48,15 +48,20 @@ public:
         return binary;
     }
 
-    std::string get_string() 
+    std::string get_string()
     {
         std::string ret;
-        for(const auto& s : original) 
+        for(const auto& s : original)
         {
             ret.append(s);
             ret.append(" ");
         }
         return ret;
+    }
+
+    std::vector<std::string> get_original()
+    {
+        return original;
     }
 };
 

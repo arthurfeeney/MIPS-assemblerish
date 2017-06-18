@@ -100,6 +100,11 @@ public:
         }
         return ret;
     }
+
+    std::vector<std::string> get_original()
+    {
+        return original;
+    }
 };
 
 #endif

@@ -10,19 +10,8 @@
 #ifndef RTYPE_H
 #define RTYPE_H
 
-namespace rtype_assist{
-    vector< vector<string> > mod_sets
-    {
-        vector<string> {"sll", "srl", "sra"},
-        vector<string> {"sllv", "srav"},
-        vector<string> {"mult", "multu", "div", "divu"},
-        vector<string> {"jr"},
-        vector<string> {"jalr"},
-        vector<string> {"mfhi", "mflo"},
-        vector<string> {"mthi", "mtlo"}
-    };
-    const int error = 420; // some thing indicating an error.
-};
+extern vector< vector<string> > mod_sets;
+const int error = 420; // some thing indicating an error.
 
 class RType : public Instruction {
 private:
@@ -40,7 +29,7 @@ private:
 
     int instr_is_set()
     {
-        const vector< vector<string> >& read_sets = rtype_assist::mod_sets;
+        const vector< vector<string> >& read_sets = mod_sets;
         for(int i = 0; i < read_sets.size(); ++i)
         {
             const vector<string>& cur_set = read_sets[i];
@@ -49,7 +38,7 @@ private:
                 return i; // returns which conditional should be called.
             }
         }
-        return -1; // command not found in rtype.
+        return -1; // command not a special rtype (what i define to be default.)
     }
 
     void order_instr()
@@ -120,7 +109,7 @@ private:
     }
 
 public:
-    RType(const std::vector<std::string> line): original(line) { }
+    RType(const std::vector<std::string> line): original(line) {}
 
     // copy
     RType(const RType &r):
@@ -155,6 +144,11 @@ public:
             ret.append(" ");
         }
         return ret;
+    }
+
+    std::vector<std::string> get_original()
+    {
+        return original;
     }
 };
 

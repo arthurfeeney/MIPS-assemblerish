@@ -1,0 +1,4 @@
+
+right now, this program just takes a file with mips commands in it and converts it to their binary form. Doesn't do anything with data segments or stuff like that (although they can be in the file, they just won't be converted to anything.) It just takes commands like addi, mult, sw, with registers and immediates and stuff.
+
+The interpreter in its current form, is a 'work in progress' ever. 

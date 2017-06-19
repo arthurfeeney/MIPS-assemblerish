@@ -26,6 +26,22 @@ void addi(const vector<string>& instr)
     registers[rt] = registers[rs] + stoi(i);
 }
 
+void add(const vector<string>& instr)
+{
+    string rd = instr[1];
+    string rs = instr[2];
+    string rt = instr[3];
+    registers[rd] = registers[rs] + registers[rt];
+}
+
+void sub(const vector<string>& instr)
+{
+    string rd = instr[1];
+    string rs = instr[2];
+    string rt = instr[3];
+    registers[rd] = registers[rs] - registers[rt];
+}
+
 bool interpret(vector<unique_ptr<Instruction>>& instructions)
 {
     int program_counter = 0;
@@ -33,8 +49,21 @@ bool interpret(vector<unique_ptr<Instruction>>& instructions)
 
     for( ; program_counter < final_pc; ++program_counter )
     {
-        const vector<string> com = instructions[program_counter]->get_original();
-        addi(com);
-        std::cout << registers["$t2"];
+        const vector<string> com = instructions[program_counter]
+                                        ->get_original();
+        if(com[0] == "addi")
+        {
+            addi(com);
+        }
+        else if(com[0] == "add")
+        {
+            add(com);
+        }
+        else if(com[0] == "sub")
+        {
+            sub(com);
+        }
+        std::cout << registers["$t5"];
     }
+    return true;
 }

@@ -16,7 +16,7 @@ XXX     4. add support for all main mips commands.
         4.5 modify the conditionals so that they are a bit more readable.
             - use a static member variable instead of a namespace.
             - a bit harder than I thought it was going to be...
-        5. do a more comprehensive test. Make sure everything still works.
+XXX    5. do a more comprehensive test. Make sure everything still works.
             - it probably does, but just make sure.
             - make extra sure la works and lui and ori work individually...
         6. make it a bit better at handling bad inputs.
@@ -26,6 +26,17 @@ XXX     4. add support for all main mips commands.
         8. refactor so that the command parts aren't ordered in the
            constructor. Just store the original string, and order things
            when to_binary is called?
+
+Interpreter TODO:
+    1. Be able to parse data segments. 
+        - think about how to do this... 
+        - make the current parser look for .data and put the stuff between that
+            and the end of the data segment in some special variable.
+            Perhaps a map<"something", vector<something>>.
+    2. make it use a map of string to function so that I don't need to have
+       ridiculous if/else if thing inside of my interpet function. 
+       mostly do this to make it look cleaner. Put the function defs somewhere
+       else. 
 
 
 Long Term:

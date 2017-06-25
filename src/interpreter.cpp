@@ -18,6 +18,26 @@ using std::stoi;
 
 // registers are saved in interpret_table.h
 
+void la(const vector<string>& instr)
+{
+          
+}
+
+void ori(const vector<string>& instr)
+{
+    string rs = instr[2];
+    string rt = instr[1];
+    string i = instr[3];
+    registers[rt] = registers[rs] | stoi(i);
+}
+
+void lui(const vector<string>& instr)
+{
+    string rt = instr[1];
+    string i = instr[2];
+    registers[rt] = stoi(i) << 16; // shift left 16 to get top 16 bits.
+}
+
 void addi(const vector<string>& instr)
 {
     string rs = instr[2];
@@ -65,5 +85,5 @@ bool interpret(vector<unique_ptr<Instruction>>& instructions)
         }
         std::cout << registers["$t5"];
     }
-    return true;
+    return true; // successful.
 }

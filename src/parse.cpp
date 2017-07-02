@@ -16,18 +16,23 @@ using std::ifstream;
 using std::map;
 using std::make_pair;
 using std::swap;
+using std::find;
 
-static map<string, int> labels; //saves the locations of the labels.
-static map<string, vector<int>> words;
-static map<string, vector<char>> asciis;
-static map<string, vector<double>> floats;
+map<string, int> labels; //saves the locations of the labels.
+map<string, vector<int> > words;
+map<string, vector<char> > asciis;
+map<string, vector<double> > floats;
 
 map<string, int> get_labels() { return labels; }
 
-//parse the file.
-vector< vector< string > >
-parse_file(ifstream& file) {
+map<string, vector<int> >& get_words() { return words; }
 
+map<string, vector<char> >& get_asciis() { return asciis; }
+
+map<string, vector<double> >& get_floats() { return floats; }
+
+//parse the file.
+vector< vector<string> > parse_file(ifstream& file) {
     vector< vector< string > > lines(0);
     int index = 0;
     for(string line; std::getline(file, line); )
@@ -37,7 +42,7 @@ parse_file(ifstream& file) {
             if(*iter == '#') line.erase(iter, line.end());
             else ++iter;
         
-        // parse if line is data
+        //parse if line contains data
         if(is_data(line)){
             parse_data(line, index);
             ++index;
@@ -71,7 +76,7 @@ parse_file(ifstream& file) {
 //parses a line of the input file.
 static vector<string> parse_line(string& line)
 {
-    vector<string> splitLine;
+    vector<string> split_line;
     // change '(' to ',' and remove ')'.
     for(auto iter = line.begin(); iter != line.end(); )
     {
@@ -84,16 +89,16 @@ static vector<string> parse_line(string& line)
         else ++iter;
     }
     // splits line on tabs, spaces, and commas.
-    boost::split(splitLine, line, boost::is_any_of("\t ,"));
+    boost::split(split_line, line, boost::is_any_of("\t ,"));
     //removes empty parts from splitLine.
-    for(auto iter = splitLine.begin(); iter != splitLine.end(); )
-        if(*iter == "\0") iter = splitLine.erase(iter);
+    for(auto iter = split_line.begin(); iter != split_line.end(); )
+        if(*iter == "\0") iter = split_line.erase(iter);
         else ++iter;
-    return splitLine;
+    return split_line;
 }
 
 // label should have been saved earlier, so I shouldn't have to save it here.
-static void parse_data(string& line, int index)
+static void parse_data(string& line, const int index)
 {
     string l;
     if(is_label(line))
@@ -107,15 +112,26 @@ static void parse_data(string& line, int index)
     }
     if(boost::contains(line, ".word"))
     {
-         
+        // remove keyword from the line.
+        auto front = find(line.begin(), line.end(), '.');
+        auto back = front + 5;
+        line.erase(front, back);
+
         vector<string> split_line;
-        boost::split(split_line, line, boost::is_any_of(","));
+        boost::split(split_line, line, boost::is_any_of("\t ,"));
+        for(auto iter = split_line.begin(); iter != split_line.end();) 
+            if(*iter == "\0") iter = split_line.erase(iter);
+            else ++iter;
         vector<int> push_line(0);
-        for(auto&& word : split_line)
+        for(string word : split_line)
         {
             push_line.push_back(stoi(word));     
         }
         words.insert(make_pair(l, push_line));
+        std::cout << l << '\n';
+        for(auto& w : push_line) {
+            std::cout << w << '\n';
+        }
     }
     else if(boost::contains(line, ".asciiz"))
     {
@@ -132,6 +148,8 @@ static void parse_data(string& line, int index)
     {
 
     }
+    // clear the entire line so it won't be processed again.
+    line.erase(line.begin(), line.end());
 }
 
 //if there is a colon, line has a label. Already removed comments.

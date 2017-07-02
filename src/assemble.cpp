@@ -66,9 +66,12 @@ bool assemble(ifstream& in_file, ofstream& out_file)
 
     for(const auto& i : instructions)
     {
-        string binary = i->to_binary();
-        out_file << binary << '\t' << '\n';
-        std::cout << binary << '\t' << i->get_string() << "\n\n";
+        if(instr_type[i->get_original()[0]] != 'p')
+        {
+            string binary = i->to_binary();
+            out_file << binary << '\t' << '\n';
+            std::cout << binary << '\t' << i->get_string() << "\n\n";
+        }
     }
 /*
     vector<Instruction> interp(instructions.size());

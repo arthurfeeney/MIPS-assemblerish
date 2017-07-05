@@ -41,13 +41,13 @@ vector< vector<string> > parse_file(ifstream& file) {
         for(auto iter = line.begin(); iter != line.end(); )
             if(*iter == '#') line.erase(iter, line.end());
             else ++iter;
-        
+
         //parse if line contains data
         if(is_data(line)){
             parse_data(line, index);
             ++index;
         }
-        
+
         // check if line has a label, if it does, save its index
         if(is_label(line))
         {
@@ -57,7 +57,7 @@ vector< vector<string> > parse_file(ifstream& file) {
             labels.insert(labels.end(), make_pair(label, index));
             line.erase(line.begin(), iter + 1);
         }
-        
+
         //remove tabs and spaces from the front of line.
         auto iter = line.begin();
         while(*iter == '\t' || *iter == ' ') ++iter;
@@ -119,33 +119,40 @@ static void parse_data(string& line, const int index)
 
         vector<string> split_line;
         boost::split(split_line, line, boost::is_any_of("\t ,"));
-        for(auto iter = split_line.begin(); iter != split_line.end();) 
+        for(auto iter = split_line.begin(); iter != split_line.end();)
             if(*iter == "\0") iter = split_line.erase(iter);
             else ++iter;
         vector<int> push_line(0);
         for(string word : split_line)
         {
-            push_line.push_back(stoi(word));     
+            push_line.push_back(stoi(word));
         }
         words.insert(make_pair(l, push_line));
-        std::cout << l << '\n';
-        for(auto& w : push_line) {
-            std::cout << w << '\n';
-        }
     }
     else if(boost::contains(line, ".asciiz"))
     {
+        //TODO: figure out how to do this.
+        // remove keyword from the line.
+        auto front = find(line.begin(), line.end(), '.');
+        auto back = front + 7;
+        line.erase(front, back);
+
         vector<string> split_line;
         boost::split(split_line, line, boost::is_any_of(","));
         vector<int> push_line(0);
         for(auto&& word : split_line)
         {
-            push_line.push_back(stoi(word));     
+            push_line.push_back(stoi(word));
         }
-        words.insert(make_pair(l, push_line)); 
+        words.insert(make_pair(l, push_line));
     }
     else if(boost::contains(line, ".float"))
     {
+        //TODO: figure out how to do this...
+        // remove keyword from the line.
+        auto front = find(line.begin(), line.end(), '.');
+        auto back = front + 6;
+        line.erase(front, back);
 
     }
     // clear the entire line so it won't be processed again.
@@ -153,7 +160,8 @@ static void parse_data(string& line, const int index)
 }
 
 //if there is a colon, line has a label. Already removed comments.
-static bool is_label(const string& line) {
+static bool is_label(const string& line)
+{
     return boost::contains(line, ":");
 }
 
@@ -166,4 +174,3 @@ static bool is_data(const string& line)
 {
     return boost::contains(line,  ".");
 }
-

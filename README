@@ -1,4 +1,4 @@
+The interpreter is gradually being made. It can do some of the arithmetic operations and load data. No jump commands have been implemented yet.
+However, It can parse all commands and convert them to their binary representation. So I think I have a pretty big chunk of it done.
 
-right now, this program just takes a file with mips commands in it and converts it to their binary form. Doesn't do anything with data segments or stuff like that (although they can be in the file, they just won't be converted to anything.) It just takes commands like addi, mult, sw, with registers and immediates and stuff. Just put in the location/name of the file when prompted.
-
-The interpreter in its current form, is a work (almost) in progress. 
+Definitely still a big work in progress!

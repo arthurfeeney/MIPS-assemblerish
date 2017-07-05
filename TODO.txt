@@ -28,7 +28,7 @@ XXX    5. do a more comprehensive test. Make sure everything still works.
            when to_binary is called?
 
 Interpreter TODO:
-    1. Be able to parse data segments. 
+    XXX 1. Be able to parse data segments. 
         - think about how to do this... 
         - make the current parser look for .data and put the stuff between that
             and the end of the data segment in some special variable.
@@ -37,17 +37,23 @@ Interpreter TODO:
         - split .asciiz somehow...
         - think of a safer way to check if something is data other than 
         - just checking if the line has a '.' in it.
-    2. make it use a map of string to function so that I don't need to have
-       ridiculous if/else if thing inside of my interpet function. 
-       mostly do this to make it look cleaner. Put the function defs somewhere
-       else. 
+    
+    2. make it use a map of string to function 
+    so that I don't need to have ridiculous if/else if thing inside of my 
+    interpet function. mostly do this to make it look cleaner. 
 
+    make the map of registers use shared_ptr<int> instead of int*
+
+    implement all of the commands
+        - I don't think this be that bad actually.
+        - move commands out of interpreter.cpp.
+        - implement a syscall thing so I won't feel cheap when I print stuff
+            out.
 
 Long Term:
     1. support for more pseudo commands.
     2. make it a lot better at handling bad inputs.
-    3. make it handle things like data segments and io stuff(for interpreter).
-    4. turn into an interpreter (or use it in interpreter?) <- summer project?
+    3. turn into an interpreter (or use it in interpreter?) <- summer project?
         - more options for how it runs. 'run' and 's' commands.
             - run runs through the program.
             - s steps through the program showing the binary of each command.

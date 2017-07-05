@@ -28,19 +28,19 @@ XXX    5. do a more comprehensive test. Make sure everything still works.
            when to_binary is called?
 
 Interpreter TODO:
-    XXX 1. Be able to parse data segments. 
-        - think about how to do this... 
+    XXX 1. Be able to parse data segments.
+        - think about how to do this...
         - make the current parser look for .data and put the stuff between that
             and the end of the data segment in some special variable.
             Perhaps a map<"something", vector<something>>.
         - pass data to the interpreter.
         - split .asciiz somehow...
-        - think of a safer way to check if something is data other than 
+        - think of a safer way to check if something is data other than
         - just checking if the line has a '.' in it.
-    
-    2. make it use a map of string to function 
-    so that I don't need to have ridiculous if/else if thing inside of my 
-    interpet function. mostly do this to make it look cleaner. 
+
+    2. make it use a map of string to function
+    so that I don't need to have ridiculous if/else if thing inside of my
+    interpet function. mostly do this to make it look cleaner.
 
     make the map of registers use shared_ptr<int> instead of int*
 
@@ -49,6 +49,11 @@ Interpreter TODO:
         - move commands out of interpreter.cpp.
         - implement a syscall thing so I won't feel cheap when I print stuff
             out.
+
+    add, addi, and the rest of the unsigned commands need to check for overflow
+
+    Figure out how to save an address in a register... Or a work around so I
+    don't need to! For jr and la and stuff.
 
 Long Term:
     1. support for more pseudo commands.

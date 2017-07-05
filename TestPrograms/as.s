@@ -2,7 +2,7 @@
 #hi there
 
 # not an actual valid mips program! Just has a bunch of commands!
-
+# used to test the binary converter, not the interpreter.
 hi: # yolo
 		addi	$t2, $zero, 1 # adds 1 to t2
 		add		$t4, $t2, $t3

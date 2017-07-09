@@ -7,14 +7,17 @@
 #include <memory>
 #include <array>
 
-//#include "register.h"
-
 using std::make_pair;
 
 #ifndef INTERPRET_TABLE_H
 #define INTERPRET_TABLE_H
 
 static std::vector<int> reg_save(32, 0);
+
+namespace special_registers {
+    int hi = 0;
+    int lo = 0;
+};
 
 std::map<std::string, int*> registers
 {

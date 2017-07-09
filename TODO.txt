@@ -41,8 +41,10 @@ Interpreter TODO:
     2. make it use a map of string to function
     so that I don't need to have ridiculous if/else if thing inside of my
     interpet function. mostly do this to make it look cleaner.
+        - it would be neat to do this, but probably not worth it.
 
     make the map of registers use shared_ptr<int> instead of int*
+        - a little wonkier than I figured...
 
     implement all of the commands
         - I don't think this be that bad actually.
@@ -54,6 +56,10 @@ Interpreter TODO:
 
     Figure out how to save an address in a register... Or a work around so I
     don't need to! For jr and la and stuff.
+
+    think of how to check if something is pointing to an address not in data
+    element.
+        - so like la $s1, A figure out that $s1 is an address to a jump loc.
 
 Long Term:
     1. support for more pseudo commands.

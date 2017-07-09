@@ -3,7 +3,8 @@
 #include <memory>
 #include <algorithm>
 #include <array>
-
+#include <cmath>
+#include <bitset>
 #include <iostream>
 
 #include "interpret_table.h"
@@ -22,8 +23,28 @@ using std::stoi;
 using std::find;
 using std::array;
 using std::make_shared;
+using std::abs;
 
 // registers are saved in interpret_table.h
+
+// this function checks if something is pointing to a data segment.
+// used to increment address and not add to the value its pointing to.
+//
+void print_reg(string reg)
+{
+    std::cout << reg << ": " << *registers[reg] << '\n';
+}
+bool is_data_address(const int* reg)
+{
+    for(auto& data : words)
+    {
+        int* address = data.second.data();
+        for(; *address < data.second.size(); ++address) {
+            if(reg == address) return true;
+        }
+    }
+    return false;
+}
 
 void la(const vector<string>& instr)
 {
@@ -56,7 +77,32 @@ void ori(const vector<string>& instr)
     string rs = instr[2];
     string rt = instr[1];
     string i = instr[3];
-    *registers[rt] = *registers[rs] | stoi(i);
+    int conv = is_num(i) ? stoi(i) : label_indices[i];
+    *registers[rt] = *registers[rs] | conv;
+}
+
+void or_(const vector<string>& instr)
+{
+    string rd = instr[1];
+    string rs = instr[2];
+    string rt = instr[3];
+    *registers[rd] = *registers[rs] | *registers[rt];
+}
+
+void xor_(const vector<string>& instr)
+{
+    string rd = instr[1];
+    string rs = instr[2];
+    string rt = instr[3];
+    *registers[rd] = *registers[rs] ^ *registers[rt];
+}
+
+void nor(const vector<string>& instr)
+{
+    string rd = instr[1];
+    string rs = instr[2];
+    string rt = instr[3];
+    *registers[rd] = ~(*registers[rs] | *registers[rt]);
 }
 
 void andi(const vector<string>& instr)
@@ -79,9 +125,9 @@ void lui(const vector<string>& instr)
 {
     string rt = instr[1];
     string i = instr[2];
-    int conv;
-    conv = stoi(i) << 16;
-    *registers[rt] = conv; // shift left 16 to get top 16 bits.
+    int conv = is_num(i) ? stoi(i) : label_indices[i];
+    conv = stoi(i) & ~0xFFFF; // sets the bottom 16 bits to 0
+    *registers[rt] = conv; 
 }
 
 void addi(const vector<string>& instr)
@@ -113,7 +159,13 @@ void addiu(const vector<string>& instr)
     string rt = instr[1];
     string rs = instr[2];
     string i = instr[3];
-    *registers[rt] = *registers[rs] + stoi(i);
+    if(is_data_address(registers[rs]))
+    {
+        registers[rt] = &*(registers[rs] + (stoi(i) / 4));
+    }
+    else {
+        *registers[rt] = *registers[rs] + stoi(i);
+    }
 }
 
 void sub(const vector<string>& instr)
@@ -121,7 +173,14 @@ void sub(const vector<string>& instr)
     string rd = instr[1];
     string rs = instr[2];
     string rt = instr[3];
-    *registers[rd] = *registers[rs] - *registers[rt];
+    if(is_data_address(registers[rs]))
+    {
+        registers[rt] = &*(registers[rs] - (*registers[rt] / 4));
+    }
+    else
+    {
+        *registers[rd] = *registers[rs] - *registers[rt];
+    }
 }
 
 void subi(const vector<string>& instr)
@@ -142,9 +201,10 @@ int j(const vector<string>& instr)
     return label_indices[offset];
 }
 
-// saves the return address in $ra. But idk if I need to do that...
-int jal(const vector<string>& instr)
+// saves the return address in $ra.
+int jal(const vector<string>& instr, int pc)
 {
+    *registers["ra"] = pc + 1;
     return j(instr);
 }
 
@@ -159,8 +219,8 @@ int beq(const vector<string>& instr, int pc)
     string rs = instr[1];
     string rt = instr[2];
     string offset = instr[3];
-
-    if(registers[rs] == registers[rt]) {
+    if(registers[rs] == registers[rt])
+    {
         if(is_num(offset))
         {
             pc += (stoi(offset) / 4);
@@ -190,6 +250,79 @@ int bne(const vector<string>& instr, int pc)
         }
     }
     return pc;
+}
+
+//should be 0 extended by default?
+void lbu(const vector<string>& instr)
+{
+    string rt = instr[1];
+    string offset = instr[2];
+    string base = instr[3];
+    uint8_t byte = *(registers[base] + (stoi(offset) / 4));
+    *registers[rt] = static_cast<int>(byte); 
+}
+
+void lhu(const vector<string>& instr)
+{
+    string rt = instr[1];
+    string offset = instr[2];
+    string base = instr[3];
+    uint16_t half = *(registers[base] + (stoi(offset) / 4));
+    *registers[rt] = static_cast<int>(half);
+}
+
+void sll(const vector<string>& instr)
+{
+    string rd = instr[1];
+    string rt = instr[2];
+    string sa = instr[3];
+    *registers[rd] = *registers[rt] << stoi(sa);
+}
+
+void sr_(const vector<string>& instr)
+{
+    string rd = instr[1];
+    string rt = instr[2];
+    string sa = instr[3];
+    *registers[rd] = *registers[rt] >> stoi(sa);
+}
+
+void mult(const vector<string>& instr)
+{
+    string rs = instr[1];
+    string rt = instr[2];
+    const int val1 = *registers[rs];
+    const int val2 = *registers[rt];
+    std::bitset<64> prod(val1 * val2);
+    string binary_s_prod = prod.to_string();
+    string upper(32, '0');
+    string lower(32, '0');
+    for(int i = 0; i < 32; ++i)
+    {
+        upper[i] = binary_s_prod[i];
+        lower[i] = binary_s_prod[i+32];
+    }
+    special_registers::hi = stoi(upper, nullptr, 2);
+    special_registers::lo = stoi(lower, nullptr, 2);
+}
+
+void div(const vector<string>& instr)
+{
+    string rs = instr[1];
+    string rt = instr[2];
+    const int val1 = *registers[rs];
+    const int val2 = *registers[rt];
+    std::bitset<64> qout(val1 / val2);
+    string binary_s_quot = qout.to_string();
+    string upper(32, '0');
+    string lower(32, '0');
+    for(int i = 0; i < 32; ++i)
+    {
+        upper[i] = binary_s_quot[i];
+        lower[i] = binary_s_quot[i+32];
+    }
+    special_registers::hi = stoi(upper, nullptr, 2);
+    special_registers::lo = stoi(lower, nullptr, 2);
 }
 
 bool is_la(array<vector<string>, 2>& coms)
@@ -288,19 +421,56 @@ bool interpret(vector<unique_ptr<Instruction>>& instructions)
         }
         else if(com[0] == "jal")
         {
-            return_index = program_counter + 1;
-            program_counter = jal(com);
+            program_counter = jal(com, program_counter);
         }
         else if(com[0] == "jr")
         {
             program_counter = jr(com);
         }
+        else if(com[0] == "ori")
+        {
+            ori(com);
+        }
+        else if(com[0] == "or")
+        {
+            or_(com);
+        }
+        else if(com[0] == "lbu")
+        {
+            lbu(com);
+        }
+        else if(com[0] == "lhu")
+        {
+            lhu(com);
+        }
+        else if(com[0] == "sll")
+        {
+            sll(com);
+        }
+        else if(com[0] == "srl")
+        {
+            // assuming c++ will choose srl or sra.
+            sr_(com);
+        }
+        else if(com[0] == "sra")
+        {
+            sr_(com);
+        }
+        else if(com[0] == "xor")
+        {
+            xor_(com);
+        }
+        else if(com[0] == "nor")
+        {
+            nor(com);
+        }
+        else if(com[0] == "mult")
+        {
+            mult(com);
+        }
     }
-    std::cout << "register $t5: " << *registers["$t5"] << '\n';
-    std::cout << "register $s1: " << *registers["$s1"] << '\n';
-    std::cout << "register $t0: " << *registers["$t0"] << '\n';
-    for(int i : words["A"]) {
-        std::cout << i << ", ";
-    }
+    print_reg("$t5");
+    print_reg("$s1");
+    std::cout << special_registers::hi << special_registers::lo << '\n';
     return true; // successful.
 }

@@ -105,6 +105,14 @@ void nor(const vector<string>& instr)
     *registers[rd] = ~(*registers[rs] | *registers[rt]);
 }
 
+void xori(const vector<string>& instr)
+{
+    string rt = instr[1];
+    string rs = instr[2];
+    string immediate = instr[3];
+    *registers[rt] = *registers[rs] | stoi(immediate);
+}
+
 void andi(const vector<string>& instr)
 {
     string rs = instr[2];
@@ -127,7 +135,7 @@ void lui(const vector<string>& instr)
     string i = instr[2];
     int conv = is_num(i) ? stoi(i) : label_indices[i];
     conv = stoi(i) & ~0xFFFF; // sets the bottom 16 bits to 0
-    *registers[rt] = conv; 
+    *registers[rt] = conv;
 }
 
 void addi(const vector<string>& instr)
@@ -259,7 +267,16 @@ void lbu(const vector<string>& instr)
     string offset = instr[2];
     string base = instr[3];
     uint8_t byte = *(registers[base] + (stoi(offset) / 4));
-    *registers[rt] = static_cast<int>(byte); 
+    *registers[rt] = static_cast<int>(byte);
+}
+
+void lb(const vector<string>& instr)
+{
+    string rt = instr[1];
+    string offset = instr[2];
+    string base = instr[3];
+    int8_t byte = *(registers[base] + (stoi(offset) / 4));
+    *registers[rt] = static_cast<int>(byte);
 }
 
 void lhu(const vector<string>& instr)
@@ -271,12 +288,29 @@ void lhu(const vector<string>& instr)
     *registers[rt] = static_cast<int>(half);
 }
 
+void lh(const vector<string>& instr)
+{
+    string rt = instr[1];
+    string offset = instr[2];
+    string base = instr[3];
+    int16_t half = *(registers[base] + (stoi(offset) / 4));
+    *registers[rt] = static_cast<int>(half);
+}
+
 void sll(const vector<string>& instr)
 {
     string rd = instr[1];
     string rt = instr[2];
     string sa = instr[3];
     *registers[rd] = *registers[rt] << stoi(sa);
+}
+
+void sllv(const vector<string>& instr)
+{
+    string rd = instr[1];
+    string rt = instr[2];
+    string rs = instr[3];
+    *registers[rd] = *registers[rt] << *registers[rs];
 }
 
 void sr_(const vector<string>& instr)
@@ -323,6 +357,94 @@ void div(const vector<string>& instr)
     }
     special_registers::hi = stoi(upper, nullptr, 2);
     special_registers::lo = stoi(lower, nullptr, 2);
+}
+
+void slt(const vector<string>& instr)
+{
+    string rd = instr[1];
+    string rs = instr[2];
+    string rt = instr[3];
+    *registers[rd] = *registers[rs] < *registers[rt] ? 1 : 0;
+}
+
+void sltu(const vector<string>& instr)
+{
+    string rd = instr[1];
+    string rs = instr[2];
+    string rt = instr[3];
+    *registers[rd] = ((0 || *registers[rs]) < (0 || *registers[rt])) ? 1 : 0;
+}
+
+void slti(const vector<string>& instr)
+{
+    string rt = instr[1];
+    string rs = instr[2];
+    string immediate = instr[3];
+    *registers[rt] = *registers[rs] < stoi(immediate) ? 1 : 0;
+}
+
+void sltiu(const vector<string>& instr)
+{
+    string rt = instr[1];
+    string rs = instr[2];
+    string immediate = instr[3];
+    *registers[rt] = ((0 || *registers[rs]) < (0 || stoi(immediate))) ? 1 : 0;
+}
+
+int bgtz(const vector<string>& instr, int pc)
+{
+    string rs = instr[1];
+    string offset = instr[2];
+    if(*registers[rs] > 0)
+        if(is_num(offset))
+        {
+            pc += (stoi(offset) / 4);
+        }
+        else
+        {
+            pc = label_indices[offset];
+        }
+    return pc;
+}
+
+int blez(const vector<string>& instr, int pc)
+{
+    string rs = instr[1];
+    string offset = instr[2];
+    if(*registers[rs] <= 0)
+        if(is_num(offset))
+        {
+            pc += (stoi(offset) / 4);
+        }
+        else
+        {
+            pc = label_indices[offset];
+        }
+    return pc;
+}
+
+void mfhi(const vector<string>& instr)
+{
+    string rd = instr[1];
+    *registers[rd] = special_registers::hi;
+}
+
+void mflo(const vector<string>& instr)
+{
+    string rd = instr[1];
+    *registers[rd] = special_registers::lo;
+}
+
+void mthi(const vector<string>& instr)
+{
+    string rd = instr[1];
+    special_registers::hi = *registers[rd];
+}
+
+void mtlo(const vector<string>& instr)
+{
+    string rd = instr[1];
+    special_registers::lo = *registers[rd];
 }
 
 bool is_la(array<vector<string>, 2>& coms)
@@ -467,6 +589,50 @@ bool interpret(vector<unique_ptr<Instruction>>& instructions)
         else if(com[0] == "mult")
         {
             mult(com);
+        }
+        else if(com[0] == "sllv")
+        {
+            sllv(com);
+        }
+        else if(com[0] == "xori")
+        {
+            xori(com);
+        }
+        else if(com[0] == "slt")
+        {
+            slt(com);
+        }
+        else if(com[0] == "sltu")
+        {
+            sltu(com);
+        }
+        else if(com[0] == "slti")
+        {
+            slti(com);
+        }
+        else if(com[0] == "sltiu")
+        {
+            sltiu(com);
+        }
+        else if(com[0] == "bgtz")
+        {
+            program_counter = bgtz(com, program_counter);
+        }
+        else if(com[0] == "blez")
+        {
+            program_counter = blez(com, program_counter);
+        }
+        else if(com[0] == "lb")
+        {
+            lb(com);
+        }
+        else if(com[0] == "lh")
+        {
+            lh(com);
+        }
+        else if(com[0] == "sb")
+        {
+            sw(com);
         }
     }
     print_reg("$t5");

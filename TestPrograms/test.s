@@ -21,7 +21,7 @@ main:
 label:  # skips the addi !!!
 
 
-        beq     $t5, $t5, 4
+        beq     $t5, $t5, 1
 qwop:   addi    $t5, $zero, 1
 
 
@@ -30,9 +30,7 @@ qwop:   addi    $t5, $zero, 1
 
         and     $t5, $t5, $t2
 
-        #la      $s1, qwop
-
-        addiu    $s1, $s1, 8
+        addiu	$s1, $s1, 3
 
 		div 	 $s1, $t5
 

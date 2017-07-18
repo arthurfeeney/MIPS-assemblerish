@@ -53,7 +53,7 @@ void la(const vector<string>& instr)
     auto spot = words.find(address_label);
     int* address = spot == words.end() ? &labels[address_label]
                                         : words[address_label].data();
-    registers[reg] = address;
+    registers[reg] = &*address;
 }
 
 void lw(const vector<string>& instr)
@@ -61,7 +61,7 @@ void lw(const vector<string>& instr)
     string rt = instr[1];
     string offset = instr[2];
     string base = instr[3];
-    *registers[rt] = *(registers[base] + (stoi(offset) / 4));
+    *registers[rt] = *(registers[base] + stoi(offset));
 }
 
 void sw(const vector<string>& instr)
@@ -69,7 +69,7 @@ void sw(const vector<string>& instr)
     string rt = instr[1];
     string offset = instr[2];
     string base = instr[3];
-    *(registers[base] + (stoi(offset) / 4)) = *registers[rt];
+    *(registers[base] + stoi(offset)) = *registers[rt];
 }
 
 void ori(const vector<string>& instr)
@@ -169,7 +169,7 @@ void addiu(const vector<string>& instr)
     string i = instr[3];
     if(is_data_address(registers[rs]))
     {
-        registers[rt] = &*(registers[rs] + (stoi(i) / 4));
+        registers[rt] = &*(registers[rs] + stoi(i));
     }
     else {
         *registers[rt] = *registers[rs] + stoi(i);
@@ -183,7 +183,7 @@ void sub(const vector<string>& instr)
     string rt = instr[3];
     if(is_data_address(registers[rs]))
     {
-        registers[rt] = &*(registers[rs] - (*registers[rt] / 4));
+        registers[rt] = &*(registers[rs] - *registers[rt]);
     }
     else
     {
@@ -231,7 +231,7 @@ int beq(const vector<string>& instr, int pc)
     {
         if(is_num(offset))
         {
-            pc += (stoi(offset) / 4);
+            pc += stoi(offset);
         }
         else
         {
@@ -250,7 +250,7 @@ int bne(const vector<string>& instr, int pc)
     if(registers[rs] != registers[rt]) {
         if(is_num(offset))
         {
-            pc += (stoi(offset) / 4);
+            pc += stoi(offset);
         }
         else
         {
@@ -266,7 +266,7 @@ void lbu(const vector<string>& instr)
     string rt = instr[1];
     string offset = instr[2];
     string base = instr[3];
-    uint8_t byte = *(registers[base] + (stoi(offset) / 4));
+    uint8_t byte = *(registers[base] + stoi(offset));
     *registers[rt] = static_cast<int>(byte);
 }
 
@@ -275,7 +275,7 @@ void lb(const vector<string>& instr)
     string rt = instr[1];
     string offset = instr[2];
     string base = instr[3];
-    int8_t byte = *(registers[base] + (stoi(offset) / 4));
+    int8_t byte = *(registers[base] + stoi(offset));
     *registers[rt] = static_cast<int>(byte);
 }
 
@@ -284,7 +284,7 @@ void lhu(const vector<string>& instr)
     string rt = instr[1];
     string offset = instr[2];
     string base = instr[3];
-    uint16_t half = *(registers[base] + (stoi(offset) / 4));
+    uint16_t half = *(registers[base] + stoi(offset));
     *registers[rt] = static_cast<int>(half);
 }
 
@@ -293,7 +293,7 @@ void lh(const vector<string>& instr)
     string rt = instr[1];
     string offset = instr[2];
     string base = instr[3];
-    int16_t half = *(registers[base] + (stoi(offset) / 4));
+    int16_t half = *(registers[base] + stoi(offset));
     *registers[rt] = static_cast<int>(half);
 }
 
@@ -372,7 +372,7 @@ void sltu(const vector<string>& instr)
     string rd = instr[1];
     string rs = instr[2];
     string rt = instr[3];
-    *registers[rd] = ((0 || *registers[rs]) < (0 || *registers[rt])) ? 1 : 0;
+    *registers[rd] = ((0 | *registers[rs]) < (0 | *registers[rt])) ? 1 : 0;
 }
 
 void slti(const vector<string>& instr)
@@ -388,7 +388,7 @@ void sltiu(const vector<string>& instr)
     string rt = instr[1];
     string rs = instr[2];
     string immediate = instr[3];
-    *registers[rt] = ((0 || *registers[rs]) < (0 || stoi(immediate))) ? 1 : 0;
+    *registers[rt] = ((0 | *registers[rs]) < (0 | stoi(immediate))) ? 1 : 0;
 }
 
 int bgtz(const vector<string>& instr, int pc)
@@ -398,7 +398,7 @@ int bgtz(const vector<string>& instr, int pc)
     if(*registers[rs] > 0)
         if(is_num(offset))
         {
-            pc += (stoi(offset) / 4);
+            pc += stoi(offset);
         }
         else
         {
@@ -414,7 +414,7 @@ int blez(const vector<string>& instr, int pc)
     if(*registers[rs] <= 0)
         if(is_num(offset))
         {
-            pc += (stoi(offset) / 4);
+            pc += stoi(offset);
         }
         else
         {

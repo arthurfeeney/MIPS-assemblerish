@@ -9,8 +9,8 @@
 
 using std::make_pair;
 
-#ifndef INTERPRET_TABLE_H
-#define INTERPRET_TABLE_H
+#ifndef REGISTERS_H
+#define REGISTERS_H
 
 static std::vector<int> reg_save(32, 0);
 

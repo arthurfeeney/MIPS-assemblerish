@@ -17,6 +17,7 @@ private:
     std::string instr;
     std::string jump_location;
 
+    bool binary_constructed = false;
     std::string binary;
 
     void convert_jl()
@@ -55,9 +56,13 @@ public:
 
     std::string to_binary()
     {
+        if(binary_constructed) {
+            return binary;
+        }
         binary.append(convert_instr[instr]);
         convert_jl();
         binary.append(jump_location);
+        binary_constructed = true;
         return binary;
     }
 

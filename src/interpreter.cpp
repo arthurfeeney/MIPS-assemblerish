@@ -6,14 +6,16 @@
 #include <cmath>
 #include <bitset>
 #include <iostream>
+#include <map>
 
-#include "interpret_table.h"
+#include "registers.h"
 #include "instruction.h"
 #include "rtype.h"
 #include "itype.h"
 #include "jtype.h"
 #include "table.h" // stores the labels of the indices.
 #include "parse.h"
+//#include "functions.h"
 
 using std::vector;
 using std::string;
@@ -24,16 +26,16 @@ using std::find;
 using std::array;
 using std::make_shared;
 using std::abs;
+using std::map;
+using std::cout;
 
-// registers are saved in interpret_table.h
-
-// this function checks if something is pointing to a data segment.
-// used to increment address and not add to the value its pointing to.
-//
 void print_reg(string reg)
 {
     std::cout << reg << ": " << *registers[reg] << '\n';
 }
+
+// this function checks if something is pointing to a data segment.
+// used to increment address and not add to the value its pointing to.
 bool is_data_address(const int* reg)
 {
     for(auto& data : words)
@@ -44,6 +46,13 @@ bool is_data_address(const int* reg)
         }
     }
     return false;
+}
+
+void syscall(const vector<string>& instr) {
+    int v0 = *registers["$v0"];
+    if(v0 == 1) {
+        cout << *registers["$a0"];
+    }
 }
 
 void la(const vector<string>& instr)
@@ -143,7 +152,13 @@ void addi(const vector<string>& instr)
     string rs = instr[2];
     string rt = instr[1];
     string i = instr[3];
-    *registers[rt] = *registers[rs] + stoi(i);
+    if(is_data_address(registers[rs]))
+    {
+        registers[rt] = registers[rs] + stoi(i);
+    }
+    else {
+        *registers[rt] = *registers[rs] + stoi(i);
+    }
 }
 
 void add(const vector<string>& instr)
@@ -151,7 +166,15 @@ void add(const vector<string>& instr)
     string rd = instr[1];
     string rs = instr[2];
     string rt = instr[3];
-    *registers[rd] = *registers[rs] + *registers[rt];
+    if(is_data_address(registers[rs])) {
+        registers[rd] = registers[rs] + *registers[rt];
+    }
+    else if(is_data_address(registers[rt])) {
+        registers[rd] = *registers[rs] + registers[rt];
+    }
+    else {
+        *registers[rd] = *registers[rs] + *registers[rt];
+    }
 }
 
 void addu(const vector<string>& instr)
@@ -159,7 +182,15 @@ void addu(const vector<string>& instr)
     string rd = instr[1];
     string rs = instr[2];
     string rt = instr[3];
-    *registers[rd] = *registers[rs] + *registers[rt];
+    if(is_data_address(registers[rs])) {
+        registers[rd] = registers[rs] + *registers[rt];
+    }
+    else if(is_data_address(registers[rt])) {
+        registers[rd] = *registers[rs] + registers[rt];
+    }
+    else {
+        *registers[rd] = *registers[rs] + *registers[rt];
+    }
 }
 
 void addiu(const vector<string>& instr)
@@ -169,7 +200,7 @@ void addiu(const vector<string>& instr)
     string i = instr[3];
     if(is_data_address(registers[rs]))
     {
-        registers[rt] = &*(registers[rs] + stoi(i));
+        registers[rt] = registers[rs] + stoi(i);
     }
     else {
         *registers[rt] = *registers[rs] + stoi(i);
@@ -183,7 +214,7 @@ void sub(const vector<string>& instr)
     string rt = instr[3];
     if(is_data_address(registers[rs]))
     {
-        registers[rt] = &*(registers[rs] - *registers[rt]);
+        registers[rd] = &*(registers[rs] - *registers[rt]);
     }
     else
     {
@@ -196,7 +227,12 @@ void subi(const vector<string>& instr)
     string rt = instr[1];
     string rs = instr[2];
     string i = instr[3];
-    *registers[rt] = *registers[rs] - stoi(i);
+    if(is_data_address(registers[rs])) {
+        registers[rt] = registers[rs] - stoi(i);
+    }
+    else {
+        *registers[rt] = *registers[rs] - stoi(i);
+    }
 }
 
 int j(const vector<string>& instr)
@@ -454,9 +490,199 @@ bool is_la(array<vector<string>, 2>& coms)
     return one[0] == "lui" && two[0] == "ori" && one[2] == two[3];
 }
 
+int program_counter = 0;
+
+void perform(const vector<string>& com, int& program_counter,
+             vector<unique_ptr<Instruction>>& instructions) {
+    if(com[0] == "addi")
+    {
+        addi(com);
+    }
+    else if(com[0] == "add")
+    {
+        add(com);
+    }
+    else if(com[0] == "sub")
+    {
+        sub(com);
+    }
+    else if(com[0] == "subi")
+    {
+        subi(com);
+    }
+    else if(com[0] == "lui")
+    {
+        vector<string> next = instructions[program_counter + 1]
+                                                ->
+                                                get_original();
+        array<vector<string>, 2> coms {
+            com,
+            next
+        };
+        if(is_la(coms))
+        {
+            vector<string> real {
+                "la",
+                next[1],
+                com[2],
+            };
+            la(real);
+            ++program_counter;
+        }
+        else {
+            lui(com);
+        }
+    }
+    else if(com[0] == "lw")
+    {
+        lw(com);
+    }
+    else if(com[0] == "sw")
+    {
+        sw(com);
+    }
+    else if(com[0] == "andi")
+    {
+        andi(com);
+    }
+    else if(com[0] == "j")
+    {
+        program_counter = j(com);
+    }
+    else if(com[0] == "beq")
+    {
+        program_counter = beq(com, program_counter);
+    }
+    else if(com[0] == "bne")
+    {
+        program_counter = bne(com, program_counter);
+    }
+    else if(com[0] == "addiu")
+    {
+        addiu(com);
+    }
+    else if(com[0] == "addu")
+    {
+        addu(com);
+    }
+    else if(com[0] == "and")
+    {
+        and_(com);
+    }
+    else if(com[0] == "jal")
+    {
+        program_counter = jal(com, program_counter);
+    }
+    else if(com[0] == "jr")
+    {
+        program_counter = jr(com);
+    }
+    else if(com[0] == "ori")
+    {
+        ori(com);
+    }
+    else if(com[0] == "or")
+    {
+        or_(com);
+    }
+    else if(com[0] == "lbu")
+    {
+        lbu(com);
+    }
+    else if(com[0] == "lhu")
+    {
+        lhu(com);
+    }
+    else if(com[0] == "sll")
+    {
+        sll(com);
+    }
+    else if(com[0] == "srl")
+    {
+        // assuming c++ will choose srl or sra. Bad assumption.
+        sr_(com);
+    }
+    else if(com[0] == "sra")
+    {
+        sr_(com);
+    }
+    else if(com[0] == "xor")
+    {
+        xor_(com);
+    }
+    else if(com[0] == "nor")
+    {
+        nor(com);
+    }
+    else if(com[0] == "mult")
+    {
+        mult(com);
+    }
+    else if(com[0] == "sllv")
+    {
+        sllv(com);
+    }
+    else if(com[0] == "xori")
+    {
+        xori(com);
+    }
+    else if(com[0] == "slt")
+    {
+        slt(com);
+    }
+    else if(com[0] == "sltu")
+    {
+        sltu(com);
+    }
+    else if(com[0] == "slti")
+    {
+        slti(com);
+    }
+    else if(com[0] == "sltiu")
+    {
+        sltiu(com);
+    }
+    else if(com[0] == "bgtz")
+    {
+        program_counter = bgtz(com, program_counter);
+    }
+    else if(com[0] == "blez")
+    {
+        program_counter = blez(com, program_counter);
+    }
+    else if(com[0] == "lb")
+    {
+        lb(com);
+    }
+    else if(com[0] == "lh")
+    {
+        lh(com);
+    }
+    else if(com[0] == "sb")
+    {
+        sw(com);
+    }
+}
+
+bool step(vector<unique_ptr<Instruction>>& instructions) {
+    if(program_counter < instructions.size()) {
+        const vector<string> com = instructions[program_counter]
+                                        ->get_original();
+        string binary = instructions[program_counter]->to_binary();
+        string instr = instructions[program_counter]->get_string();
+        std::cout << binary << "    " << instr << '\n';
+        perform(com, program_counter, instructions);
+        ++program_counter;
+    }
+    else {
+        cout << "program complete \n";
+        return false;
+    }
+    return true;
+}
+
 bool interpret(vector<unique_ptr<Instruction>>& instructions)
 {
-    int program_counter = 0;
     const int final_pc = instructions.size();
 
     int return_index = 0;
@@ -464,179 +690,10 @@ bool interpret(vector<unique_ptr<Instruction>>& instructions)
     for( ; program_counter < final_pc; ++program_counter )
     {
         const vector<string> com = instructions[program_counter]
-                                                    ->
-                                                    get_original();
-        if(com[0] == "addi")
-        {
-            addi(com);
-        }
-        else if(com[0] == "add")
-        {
-            add(com);
-        }
-        else if(com[0] == "sub")
-        {
-            sub(com);
-        }
-        else if(com[0] == "subi")
-        {
-            subi(com);
-        }
-        else if(com[0] == "lui")
-        {
-            vector<string> next = instructions[program_counter + 1]
-                                                    ->
-                                                    get_original();
-            array<vector<string>, 2> coms {
-                com,
-                next
-            };
-            if(is_la(coms))
-            {
-                vector<string> real {
-                    "la",
-                    next[1],
-                    com[2],
-                };
-                la(real);
-                ++program_counter;
-            }
-            else {
-                lui(com);
-            }
-        }
-        else if(com[0] == "lw")
-        {
-            lw(com);
-        }
-        else if(com[0] == "sw")
-        {
-            sw(com);
-        }
-        else if(com[0] == "andi")
-        {
-            andi(com);
-        }
-        else if(com[0] == "j")
-        {
-            program_counter = j(com);
-        }
-        else if(com[0] == "beq")
-        {
-            program_counter = beq(com, program_counter);
-        }
-        else if(com[0] == "bne")
-        {
-            program_counter = bne(com, program_counter);
-        }
-        else if(com[0] == "addiu")
-        {
-            addiu(com);
-        }
-        else if(com[0] == "addu")
-        {
-            addu(com);
-        }
-        else if(com[0] == "and")
-        {
-            and_(com);
-        }
-        else if(com[0] == "jal")
-        {
-            program_counter = jal(com, program_counter);
-        }
-        else if(com[0] == "jr")
-        {
-            program_counter = jr(com);
-        }
-        else if(com[0] == "ori")
-        {
-            ori(com);
-        }
-        else if(com[0] == "or")
-        {
-            or_(com);
-        }
-        else if(com[0] == "lbu")
-        {
-            lbu(com);
-        }
-        else if(com[0] == "lhu")
-        {
-            lhu(com);
-        }
-        else if(com[0] == "sll")
-        {
-            sll(com);
-        }
-        else if(com[0] == "srl")
-        {
-            // assuming c++ will choose srl or sra.
-            sr_(com);
-        }
-        else if(com[0] == "sra")
-        {
-            sr_(com);
-        }
-        else if(com[0] == "xor")
-        {
-            xor_(com);
-        }
-        else if(com[0] == "nor")
-        {
-            nor(com);
-        }
-        else if(com[0] == "mult")
-        {
-            mult(com);
-        }
-        else if(com[0] == "sllv")
-        {
-            sllv(com);
-        }
-        else if(com[0] == "xori")
-        {
-            xori(com);
-        }
-        else if(com[0] == "slt")
-        {
-            slt(com);
-        }
-        else if(com[0] == "sltu")
-        {
-            sltu(com);
-        }
-        else if(com[0] == "slti")
-        {
-            slti(com);
-        }
-        else if(com[0] == "sltiu")
-        {
-            sltiu(com);
-        }
-        else if(com[0] == "bgtz")
-        {
-            program_counter = bgtz(com, program_counter);
-        }
-        else if(com[0] == "blez")
-        {
-            program_counter = blez(com, program_counter);
-        }
-        else if(com[0] == "lb")
-        {
-            lb(com);
-        }
-        else if(com[0] == "lh")
-        {
-            lh(com);
-        }
-        else if(com[0] == "sb")
-        {
-            sw(com);
-        }
+                                                            ->get_original();
+        perform(com, program_counter, instructions);
     }
-    print_reg("$t5");
-    print_reg("$s1");
-    std::cout << special_registers::hi << special_registers::lo << '\n';
+    print_reg("$t1");
+    print_reg("$t2");
     return true; // successful.
 }

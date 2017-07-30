@@ -91,8 +91,18 @@ static vector<string> parse_line(string& line)
     // splits line on tabs, spaces, and commas.
     boost::split(split_line, line, boost::is_any_of("\t ,"));
     //removes empty parts from splitLine.
+    //and convert binary and hex to dec
     for(auto iter = split_line.begin(); iter != split_line.end(); )
         if(*iter == "\0") iter = split_line.erase(iter);
+        else if((*iter)[0] == '0' && ((*iter)[1] == 'x' || (*iter)[1] == 'b')) 
+        {
+            int index = iter - split_line.begin();
+            int val = 0;
+            string value = string((*iter).begin() + 2, (*iter).end());
+            if((*iter)[1] == 'x') val = std::stoi(value, nullptr, 16);
+            else if((*iter)[1] == 'b') val = std::stoi(value, nullptr, 2);
+            split_line[index] = std::to_string(val);
+        }
         else ++iter;
     return split_line;
 }

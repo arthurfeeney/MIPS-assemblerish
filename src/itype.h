@@ -20,6 +20,7 @@ private:
     std::string rt;
     std::string immediate;
 
+    bool binary_constructed = false;
     std::string binary;
 
 public:
@@ -79,6 +80,9 @@ public:
 
     std::string to_binary()
     {
+        if(binary_constructed) {
+            return binary;
+        }
         binary.append(convert_instr[instr]);
         binary.append(convert_reg[rs]);
         binary.append(convert_reg[rt]);
@@ -97,6 +101,7 @@ public:
                 std::bitset<16>(std::stoi(immediate)).to_string()
             );
         }
+        binary_constructed = true;
         return binary;
     }
 

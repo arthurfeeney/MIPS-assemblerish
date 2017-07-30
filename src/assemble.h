@@ -10,7 +10,8 @@
 #ifndef ASSEMBLE_H
 #define ASSEMBLE_H
 
-bool assemble(std::ifstream& file, std::ofstream& out_file);
+std::vector<std::unique_ptr<Instruction>> assemble(std::ifstream& file, 
+                                                   std::ofstream& out_file);
 static bool is_instr(std::string& word);
 static std::unique_ptr<Instruction>
     convert_line(const std::vector<std::string>& splitLine);

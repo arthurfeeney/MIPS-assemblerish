@@ -30,7 +30,6 @@ using std::unique_ptr;
 
 int main(int argc, char** argv)
 {
-
     std::cout << '\n' << "********************************" << '\n';
     std::cout << "mips-ish interpreter: \n\n";
 
@@ -45,7 +44,7 @@ int main(int argc, char** argv)
         std::getline(cin, input);
         vector<string> got = parse_options(input);
         if(got.size() == 1) {
-            if(got[0] == "run") {
+            if(got[0] == "run" || got[0] == "go" || got[0] == "execute") {
                 if(has_file) {
                     interpret(instructions);
                 }
@@ -54,15 +53,22 @@ int main(int argc, char** argv)
                     go = false;
                 }
             }
-            else if(got[0] == "step") step(instructions);
-            else if(got[0] == "quit") go = false;
-            else {
-                std::cout << "invalid command" << '\n';
+            else if(got[0] == "step") {
+                step(instructions);
+            }
+            else if(got[0] == "reset") {
+                reset();
+            }
+            else if(got[0] == "quit") {
                 go = false;
+            }
+            else {
+                std::cout << "user input invalid command" << '\n';
             }
         }
         else {
-            if(got[0] == "load" || got[0] == "read") {
+            if(got[0] == "load" || got[0] == "read" ||
+                got[0] == "l" || got[0] == "r") {
                 strm = load_file(got[1]);
                 has_file = true;
                 // binary auto loaded to out when "assembled".

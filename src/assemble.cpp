@@ -16,6 +16,7 @@
 #include "rtype.h"
 #include "itype.h"
 #include "jtype.h"
+#include "otype.h"
 
 using std::find;
 using std::vector;
@@ -54,7 +55,8 @@ vector<unique_ptr<Instruction>> assemble(ifstream& in_file, ofstream& out_file)
                 ++program_counter;
             }
         }
-        else if(ins_type == 'i' || ins_type == 'r' || ins_type == 'j')
+        else if(ins_type == 'i' || ins_type == 'r' || ins_type == 'j'
+                || ins_type == 'o')
         {
             instructions.push_back(convert_line(sl));
             ++program_counter;
@@ -94,6 +96,10 @@ convert_line(const vector<string>& splitLine)
     if(instr_type[instr] == 'j')
     {
         return unique_ptr<Instruction>(new JType(splitLine));
+    }
+    if(instr_type[instr] == 'o') 
+    {
+        return unique_ptr<Instruction>(new OType(splitLine));
     }
 }
 

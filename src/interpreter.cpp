@@ -28,6 +28,7 @@ using std::make_shared;
 using std::abs;
 using std::map;
 using std::cout;
+using std::to_string;
 
 void print_reg(string reg)
 {
@@ -50,8 +51,20 @@ bool is_data_address(const int* reg)
 
 void syscall(const vector<string>& instr) {
     int v0 = *registers["$v0"];
+    const int *val = registers["$a0"];
     if(v0 == 1) {
-        cout << *registers["$a0"];
+        // print int
+        cout << *val;
+    }
+    else if(v0 == 4) {
+        // print null-terminated string
+        while(*val != '\0') {
+            cout << static_cast<char>(*val);
+            ++val;
+        }
+    }
+    else if(v0 == 11) {
+        cout << static_cast<char>(*val);
     }
 }
 
@@ -662,6 +675,30 @@ void perform(const vector<string>& com, int& program_counter,
     {
         sw(com);
     }
+    else if(com[0] == "syscall")
+    {
+        syscall(com);
+    }
+}
+
+string get_reg_value(string reg) {
+    int value = *registers[reg];
+    string use = to_string(value);
+    return reg + "=" + use;
+}
+
+bool is_reg(string element) {
+    if(element[0] == '$') {
+        return true;
+    }
+    return false;
+}
+
+bool reset() {
+    program_counter = 0;
+    for(auto& pair : registers) {
+        *pair.second = 0;
+    }
 }
 
 bool step(vector<unique_ptr<Instruction>>& instructions) {
@@ -671,8 +708,36 @@ bool step(vector<unique_ptr<Instruction>>& instructions) {
         string binary = instructions[program_counter]->to_binary();
         string instr = instructions[program_counter]->get_string();
         std::cout << binary << "    " << instr << '\n';
+        string pretty_string;
+        for(auto iter = com.begin() + 2; iter != com.end(); ++iter) {
+            string part = *iter;
+            if(is_reg(part)) {
+                string val = to_string(*registers[part]);
+                pretty_string.append(val);
+                pretty_string.append(" ");
+            }
+            if(is_num(part)) {
+                pretty_string.append(part);
+                pretty_string.append(" ");
+            }
+        }
+
         perform(com, program_counter, instructions);
+        string space = " ";
+        pretty_string.insert(pretty_string.begin(),
+                             space.begin(), space.end());
+        pretty_string.insert(pretty_string.begin(),
+                             com[0].begin(), com[0].end());
+        string equal = " = ";
+        pretty_string.insert(pretty_string.begin(), 
+                             equal.begin(), equal.end());
+        string assigned_reg = *(com.begin() + 1);
+        string val_assigned = to_string(*registers[assigned_reg]);
+        pretty_string.insert(pretty_string.begin(), 
+                             val_assigned.begin(), val_assigned.end());
         ++program_counter;
+        std::cout << pretty_string;
+        std::cout << '\n';
     }
     else {
         cout << "program complete \n";
@@ -693,7 +758,5 @@ bool interpret(vector<unique_ptr<Instruction>>& instructions)
                                                             ->get_original();
         perform(com, program_counter, instructions);
     }
-    print_reg("$t1");
-    print_reg("$t2");
     return true; // successful.
 }

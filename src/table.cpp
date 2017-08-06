@@ -74,7 +74,8 @@ map<string, char> instr_type {
     make_pair("mtlo", 'r'),
     make_pair("j", 'j'),
     make_pair("jal", 'j'),
-    make_pair("la", 'p') // a Pseudo-instruction.
+    make_pair("la", 'p'), // a Pseudo-instruction.
+    make_pair("syscall", 'o') // 'other' instruction.
 };
 
 

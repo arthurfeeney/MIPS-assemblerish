@@ -38,28 +38,21 @@ Interpreter TODO:
         - think of a safer way to check if something is data other than
         - just checking if the line has a '.' in it.
 
-    2. make it use a map of string to function
-    so that I don't need to have ridiculous if/else if thing inside of my
-    interpet function. mostly do this to make it look cleaner.
-        - it would be neat to do this, but probably not worth it.
-
     make the map of registers use shared_ptr<int> instead of int*
         - a little wonkier than I figured...
 
-    implement all of the commands
-        - I don't think this be that bad actually.
-        - move commands out of interpreter.cpp.
-        - implement a syscall thing so I won't feel cheap when I print stuff
-            out.
-
     add, addi, and the rest of the unsigned commands need to check for overflow
-
-    Figure out how to save an address in a register... Or a work around so I
-    don't need to! For jr and la and stuff.
 
     think of how to check if something is pointing to an address not in data
     element.
         - so like la $s1, A figure out that $s1 is an address to a jump loc.
+
+    add support for hex (and binary?) immediates.
+
+    I think I am just going to use c++ offsets to make things easier for myself
+        - so use 1 instead of 4 for integer offsets.
+
+    CLEAN THINGS UP SO THAT IT IS MORE FLUID. ADD MORE OPTIONS FOR HOW IT RUNS.
 
 Long Term:
     1. support for more pseudo commands.

@@ -6,36 +6,15 @@
 		#.global main
 
 main:
-		addi	$s0, $zero, 10
-		addi	$t2, $zero, 11
-		add 	$t5, $s0, $t2
+    	la 		$t1, A
+		addiu 	$t1, $t1, 1
+		lw		$t2, 0($t1)
+		addiu 	$t2, $t2, 79
 
-		la		$s1, A
-        lw      $t0, 0($s1)
+		addi 	$v0, $zero, 11
+		addi 	$a0, $zero, 98
+		syscall
 
-        sw      $t0, 4($s1)
-
-        j       label
-        addi    $t5, $t5, 420
-
-label:  # skips the addi !!!
-
-
-        beq     $t5, $t5, 1
-qwop:   addi    $t5, $zero, 1
-
-
-        addiu   $t5, $t5, 2
-        addu    $t5, $t5, $t5
-
-        and     $t5, $t5, $t2
-
-        addiu	$s1, $s1, 3
-
-		div 	 $s1, $t5
-
-
-        #jr      $s1
 
 		.data
-A: 		.word 	1, 2, 3, 4		# defines equivalent of int A[4]
+A: 		.word 	1, 5, 3, 4		# defines equivalent of int A[4]

@@ -1,4 +1,19 @@
-The interpreter is gradually being made. It can do some of the arithmetic operations and load data. No jump commands have been implemented yet.
-However, It can parse all commands and convert them to their binary representation. So I think I have a pretty big chunk of it done.
 
-Definitely still a big work in progress!
+uses MIPS instruction set, but I have implemented some differently to make things easier for myself. (Like all address offsets are just c++ offsets)
+
+basically works...
+
+Big TODOs:
+-Need to do a real test of all of the commands. 
+-Think of a way to actually load data address and not just use a pointer to a value in data segment...
+-make some more advanced test functions.
+
+how to run a file:
+    1. load <file name> (only works for 1 file rn)
+
+    2. run / step (run just runs it, step prints out binary, the instruction, 
+    and values in registers)
+    
+    3. boom! get output!
+
+Definitely still a big work in progress

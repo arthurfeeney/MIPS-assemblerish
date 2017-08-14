@@ -26,7 +26,7 @@ private:
 public:
     IType() {}
     IType(const std::vector<std::string> line, const int p):
-        original(line), instr(line[0]), pc(p)
+        pc(p), original(line), instr(line[0])
     {
         int m = 2, n = 1, o = 3;
         if(instr == "sw" || instr == "lw" || instr == "lbu" ||

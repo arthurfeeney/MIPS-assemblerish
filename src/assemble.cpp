@@ -81,30 +81,40 @@ vector<unique_ptr<Instruction>> assemble(ifstream& in_file, ofstream& out_file)
 
 
 // convert string to an instruction.
-static unique_ptr<Instruction>
-convert_line(const vector<string>& splitLine)
+unique_ptr<Instruction>
+convert_line(const vector<string>& split_line)
 {
-    const string instr = *splitLine.begin();
+    const string instr = *split_line.begin();
     if(instr_type[instr] == 'i')
     {
-        return unique_ptr<Instruction>(new IType(splitLine, program_counter));
+        return unique_ptr<Instruction>(new IType(split_line, program_counter));
     }
     if(instr_type[instr] == 'r')
     {
-        return unique_ptr<Instruction>(new RType(splitLine));
+        return unique_ptr<Instruction>(new RType(split_line));
     }
     if(instr_type[instr] == 'j')
     {
-        return unique_ptr<Instruction>(new JType(splitLine));
+        return unique_ptr<Instruction>(new JType(split_line));
     }
     if(instr_type[instr] == 'o') 
     {
-        return unique_ptr<Instruction>(new OType(splitLine));
+        return unique_ptr<Instruction>(new OType(split_line));
+    }
+    else {
+        std::cout << "this instruction is invalid \n";
+        std::cout << "I will leave it as an exercise to \n";
+        std::cout << "the user to find out why. \n";
+        for(auto& part : split_line) {
+            std::cout << part << ' '; 
+        }
+        std::cout << '\n';
+        throw std::invalid_argument("the input command is invalid. It does not map to a known type, so it cannot be parsed.");
     }
 }
 
 // breaks la into lui and ori.
-static vector< vector<string> > break_la(const vector<string>& splitLine)
+vector< vector<string> > break_la(const vector<string>& splitLine)
 {
     const string& instr = *splitLine.begin();
     const vector<string>& sub_instrs = convert_pseudo[instr];

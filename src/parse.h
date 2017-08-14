@@ -22,13 +22,12 @@ std::map<std::string, std::vector<int>>& get_words();
 std::map<std::string, std::vector<char>>& get_asciis();
 std::map<std::string, std::vector<double>>& get_floats();
 
-static std::vector<std::string>
-parse_line(std::string& line);
+std::vector<std::string> parse_line(std::string& line);
 
-static bool is_label(const std::string& line);
+bool is_label(const std::string& line);
 
-static bool is_data(const std::string& line);
+bool is_data(const std::string& line);
 
-static void parse_data(std::string& line, const int index);
+void parse_data(std::string& line, const int index);
 
 #endif

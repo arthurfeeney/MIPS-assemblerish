@@ -30,7 +30,7 @@ private:
     int instr_is_set()
     {
         const vector< vector<string> >& read_sets = mod_sets;
-        for(int i = 0; i < read_sets.size(); ++i)
+        for(size_t i = 0; i < read_sets.size(); ++i)
         {
             const vector<string>& cur_set = read_sets[i];
             if(std::find(cur_set.begin(), cur_set.end(), instr)!=cur_set.end())

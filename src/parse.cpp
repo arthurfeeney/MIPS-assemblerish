@@ -74,7 +74,7 @@ vector< vector<string> > parse_file(ifstream& file) {
 }
 
 //parses a line of the input file.
-static vector<string> parse_line(string& line)
+vector<string> parse_line(string& line)
 {
     vector<string> split_line;
     // change '(' to ',' and remove ')'.
@@ -108,7 +108,7 @@ static vector<string> parse_line(string& line)
 }
 
 // label should have been saved earlier, so I shouldn't have to save it here.
-static void parse_data(string& line, const int index)
+void parse_data(string& line, const int index)
 {
     string l;
     if(is_label(line))
@@ -170,7 +170,7 @@ static void parse_data(string& line, const int index)
 }
 
 //if there is a colon, line has a label. Already removed comments.
-static bool is_label(const string& line)
+bool is_label(const string& line)
 {
     return boost::contains(line, ":");
 }
@@ -180,7 +180,7 @@ static bool is_label(const string& line)
  * This is probably wrong, but it I can't think of a way to break this off the
  * top of my head, so I'm just going to stick with it for now...
  */
-static bool is_data(const string& line)
+bool is_data(const string& line)
 {
     return boost::contains(line,  ".");
 }

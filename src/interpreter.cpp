@@ -36,13 +36,13 @@ void print_reg(string reg)
 }
 
 // this function checks if something is pointing to a data segment.
-// used to increment address and not add to the value its pointing to.
+// used to increment address and not add to the value contained at that address.
 bool is_data_address(const int* reg)
 {
     for(auto& data : words)
     {
         int* address = data.second.data();
-        for(; *address < data.second.size(); ++address) {
+        for(; *address < static_cast<int>(data.second.size()); ++address) {
             if(reg == address) return true;
         }
     }
@@ -444,7 +444,7 @@ int bgtz(const vector<string>& instr, int pc)
 {
     string rs = instr[1];
     string offset = instr[2];
-    if(*registers[rs] > 0)
+    if(*registers[rs] > 0) {
         if(is_num(offset))
         {
             pc += stoi(offset);
@@ -453,6 +453,7 @@ int bgtz(const vector<string>& instr, int pc)
         {
             pc = label_indices[offset];
         }
+    }
     return pc;
 }
 
@@ -460,7 +461,7 @@ int blez(const vector<string>& instr, int pc)
 {
     string rs = instr[1];
     string offset = instr[2];
-    if(*registers[rs] <= 0)
+    if(*registers[rs] <= 0) {
         if(is_num(offset))
         {
             pc += stoi(offset);
@@ -469,6 +470,7 @@ int blez(const vector<string>& instr, int pc)
         {
             pc = label_indices[offset];
         }
+    }
     return pc;
 }
 
@@ -503,9 +505,9 @@ bool is_la(array<vector<string>, 2>& coms)
     return one[0] == "lui" && two[0] == "ori" && one[2] == two[3];
 }
 
-int program_counter = 0;
+size_t program_counter = 0;
 
-void perform(const vector<string>& com, int& program_counter,
+void perform(const vector<string>& com, size_t& program_counter,
              vector<unique_ptr<Instruction>>& instructions) {
     if(com[0] == "addi")
     {
@@ -699,6 +701,7 @@ bool reset() {
     for(auto& pair : registers) {
         *pair.second = 0;
     }
+    return true;
 }
 
 bool step(vector<unique_ptr<Instruction>>& instructions) {
@@ -748,9 +751,7 @@ bool step(vector<unique_ptr<Instruction>>& instructions) {
 
 bool interpret(vector<unique_ptr<Instruction>>& instructions)
 {
-    const int final_pc = instructions.size();
-
-    int return_index = 0;
+    const size_t final_pc = instructions.size();
 
     for( ; program_counter < final_pc; ++program_counter )
     {

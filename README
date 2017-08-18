@@ -1,19 +1,20 @@
 
-uses MIPS instruction set, but I have implemented some differently to make things easier for myself. (Like all address offsets are just c++ offsets)
+uses MIPS instruction set, but I have implemented some things differently. For instance, all address offsets are just c++ offsets. So scooching over in an array of ints: instead of incrementing address by +4, it just does +1.
 
-basically works...
+basically works.
 
 Big TODOs:
--Need to do a real test of all of the commands. 
--Think of a way to actually load data address and not just use a pointer to a value in data segment...
--make some more advanced test functions.
+0*. Think of better way to do arithmetic operations to addresses.
+1. fix broken commands 
+1.5 make some more advanced tests.
+1.5 Refactor poorly written parts.
+2. implement repl type thing.
 
 how to run a file:
     1. load <file name> (only works for 1 file rn)
-
-    2. run / step (run just runs it, step prints out binary, the instruction, 
-    and values in registers)
-    
+    2. run / step / stc(run just runs it. step prints out binary, the 
+    instruction, and values in registers. stc is step to complete. It steps
+    through the program without having to type step for every command.)
     3. boom! get output!
 
 Definitely still a big work in progress

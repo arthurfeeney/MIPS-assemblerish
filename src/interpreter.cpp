@@ -49,9 +49,9 @@ bool is_data_address(const int* reg)
     return false;
 }
 
-void syscall(const vector<string>& instr) {
+void syscall() {
     int v0 = *registers["$v0"];
-    const int *val = registers["$a0"];
+    int *val = registers["$a0"];
     if(v0 == 1) {
         // print int
         cout << *val;
@@ -276,15 +276,19 @@ int beq(const vector<string>& instr, int pc)
     string rs = instr[1];
     string rt = instr[2];
     string offset = instr[3];
-    if(registers[rs] == registers[rt])
+    if(*registers[rs] == *registers[rt])
     {
         if(is_num(offset))
         {
             pc += stoi(offset);
         }
-        else
-        {
-            pc = label_indices[offset];
+        else {
+            string error_name = "invalid offset at ";
+            string pc_loc = std::to_string(pc);
+            string thrown_message = 
+                error_name + pc_loc + instr[0] + instr[1] + instr[2] 
+                                                          + instr[3];
+            throw(thrown_message);
         }
     }
     return pc;
@@ -295,15 +299,18 @@ int bne(const vector<string>& instr, int pc)
     string rs = instr[1];
     string rt = instr[2];
     string offset = instr[3];
-
-    if(registers[rs] != registers[rt]) {
+    if(*registers[rs] != *registers[rt]) {
         if(is_num(offset))
         {
             pc += stoi(offset);
         }
-        else
-        {
-            pc = label_indices[offset];
+        else {
+            string error_name = "invalid offset at ";
+            string pc_loc = std::to_string(pc);
+            string thrown_message = 
+                error_name + pc_loc + instr[0] + instr[1] + instr[2] 
+                                                          + instr[3];
+            throw(thrown_message);
         }
     }
     return pc;
@@ -505,9 +512,8 @@ bool is_la(array<vector<string>, 2>& coms)
     return one[0] == "lui" && two[0] == "ori" && one[2] == two[3];
 }
 
-size_t program_counter = 0;
 
-void perform(const vector<string>& com, size_t& program_counter,
+void perform(const vector<string>& com, size_t& pc,
              vector<unique_ptr<Instruction>>& instructions) {
     if(com[0] == "addi")
     {
@@ -527,7 +533,7 @@ void perform(const vector<string>& com, size_t& program_counter,
     }
     else if(com[0] == "lui")
     {
-        vector<string> next = instructions[program_counter + 1]
+        vector<string> next = instructions[pc + 1]
                                                 ->
                                                 get_original();
         array<vector<string>, 2> coms {
@@ -542,7 +548,7 @@ void perform(const vector<string>& com, size_t& program_counter,
                 com[2],
             };
             la(real);
-            ++program_counter;
+            ++pc;
         }
         else {
             lui(com);
@@ -562,15 +568,15 @@ void perform(const vector<string>& com, size_t& program_counter,
     }
     else if(com[0] == "j")
     {
-        program_counter = j(com);
+        pc = j(com);
     }
     else if(com[0] == "beq")
     {
-        program_counter = beq(com, program_counter);
+        pc = beq(com, pc);
     }
     else if(com[0] == "bne")
     {
-        program_counter = bne(com, program_counter);
+        pc = bne(com, pc);
     }
     else if(com[0] == "addiu")
     {
@@ -586,11 +592,11 @@ void perform(const vector<string>& com, size_t& program_counter,
     }
     else if(com[0] == "jal")
     {
-        program_counter = jal(com, program_counter);
+        pc = jal(com, pc);
     }
     else if(com[0] == "jr")
     {
-        program_counter = jr(com);
+        pc = jr(com);
     }
     else if(com[0] == "ori")
     {
@@ -659,11 +665,11 @@ void perform(const vector<string>& com, size_t& program_counter,
     }
     else if(com[0] == "bgtz")
     {
-        program_counter = bgtz(com, program_counter);
+        pc = bgtz(com, pc);
     }
     else if(com[0] == "blez")
     {
-        program_counter = blez(com, program_counter);
+        pc = blez(com, pc);
     }
     else if(com[0] == "lb")
     {
@@ -679,9 +685,11 @@ void perform(const vector<string>& com, size_t& program_counter,
     }
     else if(com[0] == "syscall")
     {
-        syscall(com);
+        syscall();
     }
 }
+
+size_t program_counter = 0;
 
 string get_reg_value(string reg) {
     int value = *registers[reg];
@@ -704,6 +712,10 @@ bool reset() {
     return true;
 }
 
+bool complete(const size_t& instruction_size) {
+    return program_counter < instruction_size;
+}
+
 bool step(vector<unique_ptr<Instruction>>& instructions) {
     if(program_counter < instructions.size()) {
         const vector<string> com = instructions[program_counter]
@@ -724,7 +736,7 @@ bool step(vector<unique_ptr<Instruction>>& instructions) {
                 pretty_string.append(" ");
             }
         }
-
+        std::cout << "\t\t\t\t    ";
         perform(com, program_counter, instructions);
         string space = " ";
         pretty_string.insert(pretty_string.begin(),
@@ -740,13 +752,19 @@ bool step(vector<unique_ptr<Instruction>>& instructions) {
                              val_assigned.begin(), val_assigned.end());
         ++program_counter;
         std::cout << pretty_string;
-        std::cout << '\n';
+        std::cout << "\n\n";
     }
     else {
         cout << "program complete \n";
         return false;
     }
     return true;
+}
+
+void step_to_complete(vector<unique_ptr<Instruction>>& i) {
+    while(program_counter < i.size()) {
+        step(i);
+    }
 }
 
 bool interpret(vector<unique_ptr<Instruction>>& instructions)

@@ -7,6 +7,8 @@
 #include <utility>
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
+#include <locale>
+#include <cctype>
 
 #include "parse.h"
 
@@ -141,19 +143,22 @@ void parse_data(string& line, const int index)
     }
     else if(boost::contains(line, ".asciiz"))
     {
-        //TODO: figure out how to do this.
-        // remove keyword from the line.
+        // just loads them in as integers. 
         auto front = find(line.begin(), line.end(), '.');
         auto back = front + 7;
         line.erase(front, back);
 
-        vector<string> split_line;
-        boost::split(split_line, line, boost::is_any_of(","));
-        vector<int> push_line(0);
-        for(auto&& word : split_line)
-        {
-            push_line.push_back(stoi(word));
+ 
+        boost::algorithm::trim(line); // get rid of white spaces.
+        
+        vector<int> push_line(line.size());
+
+        int index = 0;
+        for(auto&& character : line) {
+            push_line[index] = character;
+            ++index;
         }
+
         words.insert(make_pair(l, push_line));
     }
     else if(boost::contains(line, ".float"))

@@ -19,6 +19,7 @@
 #include "itype.h"
 #include "rtype.h"
 #include "jtype.h"
+#include "repl.h"
 
 using std::string;
 using std::ifstream;
@@ -53,6 +54,14 @@ int main(int argc, char** argv)
                     go = false;
                 }
             }
+            else if(got[0] == "repl" || got[0] == "play") {
+                /* work in progress */
+                repl();
+
+            }
+            else if(got[0] == "stc" || got[0] == "complete") {
+                step_to_complete(instructions);
+            }
             else if(got[0] == "step") {
                 step(instructions);
             }
@@ -73,6 +82,9 @@ int main(int argc, char** argv)
                 has_file = true;
                 // binary auto loaded to out when "assembled".
                 instructions = assemble(strm, out);
+            }
+            else {
+                std::cout << "user input invalid command" << '\n';
             }
         }
     }

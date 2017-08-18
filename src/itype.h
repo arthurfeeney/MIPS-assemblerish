@@ -108,7 +108,7 @@ public:
     std::string get_string()
     {
         std::string ret;
-        for(const auto& s : original) {
+        for(const auto s : original) {
             ret.append(s);
             ret.append(" ");
         }

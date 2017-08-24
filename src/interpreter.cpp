@@ -51,20 +51,20 @@ bool is_data_address(const int* reg)
 
 void syscall() {
     int v0 = *registers["$v0"];
-    int *val = registers["$a0"];
+    int &val = *registers["$a0"];
     if(v0 == 1) {
         // print int
-        cout << *val;
+        cout << val;
     }
     else if(v0 == 4) {
         // print null-terminated string
-        while(*val != '\0') {
-            cout << static_cast<char>(*val);
+        while(val != '\0') {
+            cout << static_cast<char>(val);
             ++val;
         }
     }
     else if(v0 == 11) {
-        cout << static_cast<char>(*val);
+        cout << static_cast<char>(val);
     }
 }
 

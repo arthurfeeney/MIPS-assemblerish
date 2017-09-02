@@ -48,6 +48,7 @@ int main(int argc, char** argv)
             if(got[0] == "run" || got[0] == "go" || got[0] == "execute") {
                 if(has_file) {
                     interpret(instructions);
+                    go = false;
                 }
                 else {
                     std::cout << "no file loaded" << '\n';

@@ -28,6 +28,7 @@ using std::make_shared;
 using std::abs;
 using std::map;
 using std::cout;
+using std::cin;
 using std::to_string;
 
 void print_reg(string reg)
@@ -63,9 +64,15 @@ void syscall() {
             ++val;
         }
     }
+    else if(v0 == 5) {
+        // read an integer input by the user.
+        cin >> *registers["$v0"];
+    }
     else if(v0 == 11) {
+        // print a char.
         cout << static_cast<char>(val);
     }
+    cin.clear();
 }
 
 void la(const vector<string>& instr)
@@ -689,6 +696,7 @@ void perform(const vector<string>& com, size_t& pc,
     }
 }
 
+// this should probably not be global... BUt it works for now.
 size_t program_counter = 0;
 
 string get_reg_value(string reg) {
@@ -723,6 +731,11 @@ bool step(vector<unique_ptr<Instruction>>& instructions) {
         string binary = instructions[program_counter]->to_binary();
         string instr = instructions[program_counter]->get_string();
         std::cout << binary << "    " << instr << '\n';
+        if(com[0] == "syscall") {
+            perform(com, program_counter, instructions);
+            ++program_counter;
+            return true;
+        }
         string pretty_string;
         for(auto iter = com.begin() + 2; iter != com.end(); ++iter) {
             string part = *iter;

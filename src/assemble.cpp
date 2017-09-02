@@ -101,7 +101,8 @@ convert_line(const vector<string>& split_line)
     {
         return unique_ptr<Instruction>(new OType(split_line));
     }
-    else {
+    else 
+    {
         std::cout << "this instruction is invalid \n";
         std::cout << "I will leave it as an exercise to \n";
         std::cout << "the user to find out why. \n";
